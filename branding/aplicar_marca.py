@@ -87,3 +87,19 @@ for rel, source in replace.items():
         print("ícono reemplazado:", rel)
     else:
         print("aviso, no existe (se omite):", rel)
+
+
+# La compilación busca los íconos por el nombre corto del programa ("InformacNube-..."),
+# así que se crea una copia de cada ícono "Nextcloud-..." con el nombre nuevo.
+SHORT = VALUES["APPLICATION_SHORTNAME"]
+for f in list(theme.rglob("Nextcloud-*")):
+    if f.is_file():
+        dest = f.with_name(f.name.replace("Nextcloud-", SHORT + "-", 1))
+        shutil.copyfile(f, dest)
+        print("copia con nombre nuevo:", dest.relative_to(theme))
+
+manifest = theme / "nextcloud.VisualElementsManifest.xml"
+if manifest.exists():
+    (theme / (VALUES["APPLICATION_EXECUTABLE"] + ".VisualElementsManifest.xml")).write_text(
+        manifest.read_text(encoding="utf-8").replace("Nextcloud-", SHORT + "-"), encoding="utf-8")
+    print("manifiesto del menú inicio creado")
