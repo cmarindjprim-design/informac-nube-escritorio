@@ -1,0 +1,119 @@
+# Compila "Informac Nube" para Windows a partir del código oficial de Nextcloud Desktop.
+# - Manual: pestaña Actions → "Compilar Informac Nube (Windows)" → Run workflow.
+# - Automático: cada lunes revisa si Nextcloud publicó una versión estable nueva y la compila.
+name: Compilar Informac Nube (Windows)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versión oficial de Nextcloud Desktop (vacío = la última estable)"
+        required: false
+        default: ""
+  schedule:
+    - cron: "17 9 * * 1"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 300
+    env:
+      CRAFT_TARGET: windows-msvc2022_64-cl
+      CRAFT_MASTER_LOCATION: ${{ github.workspace }}\CraftMaster
+      CRAFT_MASTER_CONFIG: ${{ github.workspace }}\src\craftmaster.ini
+      SERVER_URL: https://nube.informac.net
+    steps:
+      - name: Descargar este proyecto (marca)
+        uses: actions/checkout@v4
+
+      - name: Elegir versión de Nextcloud Desktop
+        id: ver
+        shell: pwsh
+        run: |
+          $v = "${{ github.event.inputs.version }}"
+          if (-not $v) {
+            $tags = git ls-remote --tags https://github.com/nextcloud/desktop | ForEach-Object { ($_ -split "refs/tags/")[1] } | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
+            $v = ($tags | Sort-Object { [version]($_.TrimStart('v')) } | Select-Object -Last 1)
+          }
+          "version=$v" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          Write-Host "Versión: $v"
+          # En la ejecución automática, si ya existe un lanzamiento para esa versión, no se recompila.
+          if ("${{ github.event_name }}" -eq "schedule") {
+            $exists = gh release view "informac-$v" --repo "${{ github.repository }}" 2>$null
+            if ($LASTEXITCODE -eq 0) { "skip=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append }
+          }
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Descargar código oficial y aplicar marca
+        if: steps.ver.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch ${{ steps.ver.outputs.version }} https://github.com/nextcloud/desktop src
+          python branding\aplicar_marca.py src
+
+      - uses: actions/setup-python@v5
+        if: steps.ver.outputs.skip != 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Craft y dependencias (precompiladas por Nextcloud)
+        if: steps.ver.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          & cmd /C "git clone -q --depth=1 https://github.com/KDE/craftmaster.git ${{ env.CRAFT_MASTER_LOCATION }} 2>&1"
+          function craft() {
+              python "${{ env.CRAFT_MASTER_LOCATION }}\CraftMaster.py" --config "${{ env.CRAFT_MASTER_CONFIG }}" --target ${{ env.CRAFT_TARGET }} -c $args
+              if($LASTEXITCODE -ne 0) {exit $LASTEXITCODE}
+          }
+          $ini = Get-Content "${{ env.CRAFT_MASTER_CONFIG }}"
+          $kde = (($ini | Select-String '^craft/craft-blueprints-kde.revision\s*=\s*(.+)$').Matches[0].Groups[1].Value).Trim()
+          $nc  = (($ini | Select-String '^craft/craft-blueprints-nextcloud.revision\s*=\s*(.+)$').Matches[0].Groups[1].Value).Trim()
+          craft --add-blueprint-repository "https://github.com/nextcloud/craft-blueprints-kde.git|$kde|"
+          craft --add-blueprint-repository "https://github.com/nextcloud/craft-blueprints-nextcloud.git|$nc|"
+          craft craft
+          craft --install-deps nextcloud-client
+
+      - name: Instalar Inkscape (genera los íconos)
+        if: steps.ver.outputs.skip != 'true'
+        shell: pwsh
+        run: choco install inkscape -y --no-progress
+
+      - name: Compilar y empaquetar el instalador
+        if: steps.ver.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          echo "${{ github.workspace }}\${{ env.CRAFT_TARGET }}\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          function craft() {
+              python "${{ env.CRAFT_MASTER_LOCATION }}\CraftMaster.py" --config "${{ env.CRAFT_MASTER_CONFIG }}" --target ${{ env.CRAFT_TARGET }} -c $args
+              if($LASTEXITCODE -ne 0) {exit $LASTEXITCODE}
+          }
+          craft --set "nextcloud-client.buildTests=False"
+          craft --set "nextcloud-client.overrideServerUrl=${{ env.SERVER_URL }}"
+          craft --set "nextcloud-client.forceOverrideServerUrl=True"
+          craft --src-dir "${{ github.workspace }}\src" nextcloud-client
+          craft --src-dir "${{ github.workspace }}\src" --package nextcloud-client
+          New-Item -ItemType Directory -Force salida | Out-Null
+          Get-ChildItem -Recurse -Path "${{ github.workspace }}\${{ env.CRAFT_TARGET }}\tmp" -Include *.exe,*.msi | Where-Object { $_.Length -gt 10MB } | ForEach-Object { Copy-Item $_.FullName salida\ }
+          Get-ChildItem salida | ForEach-Object { Rename-Item $_.FullName ("InformacNube-" + "${{ steps.ver.outputs.version }}".TrimStart('v') + "-Windows-x64" + $_.Extension) }
+          Get-ChildItem salida
+          if (-not (Get-ChildItem salida)) { throw "No se generó el instalador" }
+
+      - name: Guardar instalador (artefacto de la ejecución)
+        if: steps.ver.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: InformacNube-Windows-${{ steps.ver.outputs.version }}
+          path: salida/*
+
+      - name: Publicar como lanzamiento
+        if: steps.ver.outputs.skip != 'true'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "informac-${{ steps.ver.outputs.version }}"
+          gh release create $tag (Get-ChildItem salida).FullName --repo "${{ github.repository }}" --title "Informac Nube ${{ steps.ver.outputs.version }} (Windows)" --notes "Compilado desde Nextcloud Desktop ${{ steps.ver.outputs.version }} con la marca Informac Nube. Servidor fijo: ${{ env.SERVER_URL }}." --prerelease
