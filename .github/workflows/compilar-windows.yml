@@ -119,4 +119,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "informac-${{ steps.ver.outputs.version }}"
-          gh release create $tag (Get-ChildItem salida).FullName --repo "${{ github.repository }}" --title "Informac Nube ${{ steps.ver.outputs.version }} (Windows)" --notes "Compilado desde Nextcloud Desktop ${{ steps.ver.outputs.version }} con la marca Informac Nube. Servidor fijo: ${{ env.SERVER_URL }}."
+          $files = (Get-ChildItem salida).FullName
+          gh release view $tag --repo "${{ github.repository }}" 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag $files --clobber --repo "${{ github.repository }}"
+          } else {
+            gh release create $tag $files --repo "${{ github.repository }}" --title "Informac Nube ${{ steps.ver.outputs.version }} (Windows)" --notes "Compilado desde Nextcloud Desktop ${{ steps.ver.outputs.version }} con la marca Informac Nube. Servidor fijo: ${{ env.SERVER_URL }}."
+          }
+          gh release edit $tag --repo "${{ github.repository }}" --prerelease=false --latest
