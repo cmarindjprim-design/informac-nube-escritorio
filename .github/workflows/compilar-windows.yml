@@ -99,8 +99,11 @@ jobs:
           New-Item -ItemType Directory -Force salida | Out-Null
           Get-ChildItem -Recurse -Path "${{ github.workspace }}\${{ env.CRAFT_TARGET }}\tmp" -Include *.exe,*.msi | Where-Object { $_.Length -gt 10MB } | ForEach-Object { Copy-Item $_.FullName salida\ }
           Get-ChildItem salida | ForEach-Object { Rename-Item $_.FullName ("InformacNube-" + "${{ steps.ver.outputs.version }}".TrimStart('v') + "-Windows-x64" + $_.Extension) }
-          Get-ChildItem salida
           if (-not (Get-ChildItem salida)) { throw "No se generó el instalador" }
+          # Copia con nombre fijo: es la que descarga la página "Conectar mi computador" de la nube.
+          $first = Get-ChildItem salida | Select-Object -First 1
+          Copy-Item $first.FullName ("salida\InformacNube-Windows-x64" + $first.Extension)
+          Get-ChildItem salida
 
       - name: Guardar instalador (artefacto de la ejecución)
         if: steps.ver.outputs.skip != 'true'
@@ -116,4 +119,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "informac-${{ steps.ver.outputs.version }}"
-          gh release create $tag (Get-ChildItem salida).FullName --repo "${{ github.repository }}" --title "Informac Nube ${{ steps.ver.outputs.version }} (Windows)" --notes "Compilado desde Nextcloud Desktop ${{ steps.ver.outputs.version }} con la marca Informac Nube. Servidor fijo: ${{ env.SERVER_URL }}." --prerelease
+          gh release create $tag (Get-ChildItem salida).FullName --repo "${{ github.repository }}" --title "Informac Nube ${{ steps.ver.outputs.version }} (Windows)" --notes "Compilado desde Nextcloud Desktop ${{ steps.ver.outputs.version }} con la marca Informac Nube. Servidor fijo: ${{ env.SERVER_URL }}."
