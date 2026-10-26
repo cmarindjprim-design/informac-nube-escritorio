@@ -24,7 +24,7 @@ for recipe in recipes:
         'self.applicationExecutable = "nextcloud"': 'self.applicationExecutable = "informacnube"\n'
         '        self.defines["productname"] = "Informac Nube"\n'
         '        self.defines["website"] = "https://informac.cl"'
-        + (f'\n        self.defines["icon"] = r"{icon}"' if icon else ''),
+        ,
     }
     for old, new in replacements.items():
         if old not in text:
@@ -32,3 +32,14 @@ for recipe in recipes:
         text = text.replace(old, new)
     recipe.write_text(text, encoding="utf-8")
     print("receta ajustada:", recipe)
+
+# Ícono del instalador: Craft usa por defecto su propio "craft.ico". Lo reemplazamos por el de Informac
+# en su ubicación original (así no dependemos de rutas externas, que NSIS no siempre encuentra).
+if icon:
+    import shutil
+    targets = list(root.rglob("data/icons/craft.ico"))
+    for t in targets:
+        shutil.copyfile(icon, t)
+        print("ícono del instalador reemplazado:", t)
+    if not targets:
+        print("aviso: no encontré craft.ico")
