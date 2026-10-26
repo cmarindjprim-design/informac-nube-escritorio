@@ -46,8 +46,8 @@ cmake = SRC / "NEXTCLOUD.cmake"
 text = cmake.read_text(encoding="utf-8")
 for k, v in {**VALUES, **GUIDS}.items():
     text = set_value(text, k, v)
-# Sin actualizador automático hacia nextcloud.com, ayuda apuntando a Informac, colores de la marca.
-text = set_value(text, "APPLICATION_UPDATE_URL", "")
+# Actualizaciones desde la nube de Informac (no desde nextcloud.com), ayuda apuntando a Informac, colores de la marca.
+text = set_value(text, "APPLICATION_UPDATE_URL", "https://nube.informac.net/apps/informacnube/actualizaciones/")
 text = set_value(text, "APPLICATION_HELP_URL", "https://nube.informac.net/apps/informacnube/conectar")
 text = set_value(text, "APPLICATION_VIRTUALFILE_SUFFIX", "informacnube")
 text = set_value(text, "NEXTCLOUD_BACKGROUND_COLOR", "#22394A")
