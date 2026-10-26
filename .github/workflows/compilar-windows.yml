@@ -95,7 +95,7 @@ jobs:
           craft --set "nextcloud-client.overrideServerUrl=${{ env.SERVER_URL }}"
           craft --set "nextcloud-client.forceOverrideServerUrl=True"
           craft --src-dir "${{ github.workspace }}\src" nextcloud-client
-          python branding\parchar_empaquetado.py "${{ github.workspace }}\${{ env.CRAFT_TARGET }}"
+          python branding\parchar_empaquetado.py "${{ github.workspace }}\${{ env.CRAFT_TARGET }}" "${{ github.workspace }}\branding\informacnube.ico"
           craft --src-dir "${{ github.workspace }}\src" --package nextcloud-client
           New-Item -ItemType Directory -Force salida | Out-Null
           Get-ChildItem -Recurse -Path "${{ github.workspace }}\${{ env.CRAFT_TARGET }}\tmp" -Include *.exe,*.msi | Where-Object { $_.Length -gt 10MB } | ForEach-Object { Copy-Item $_.FullName salida\ }

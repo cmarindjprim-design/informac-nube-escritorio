@@ -26,4 +26,4 @@ Todo se hace en GitHub (pestaña **Actions**), sin instalar nada:
 ## Pendiente
 
 - Firma digital del instalador (certificado de firma de código) para evitar el aviso de Windows SmartScreen.
-- Ícono en alta resolución (512×512 o SVG original).
+- Ícono: engranaje rojo en vectores (branding/icon.svg), también usado en el instalador (informacnube.ico).

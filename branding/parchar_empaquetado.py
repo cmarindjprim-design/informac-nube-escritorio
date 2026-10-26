@@ -1,6 +1,6 @@
 """Ajusta la receta de empaquetado (Craft) para que el instalador sea "Informac Nube".
 
-Uso: python branding/parchar_empaquetado.py <carpeta-craft-del-objetivo>
+Uso: python branding/parchar_empaquetado.py <carpeta-craft-del-objetivo> <ruta-al-icono.ico>
 Busca la receta nextcloud-client.py descargada por Craft y:
 - agrega "import os" (falta en la receta oficial y el empaquetado se cae),
 - cambia nombre, empresa y ejecutable del instalador.
@@ -9,6 +9,7 @@ import pathlib
 import sys
 
 root = pathlib.Path(sys.argv[1])
+icon = pathlib.Path(sys.argv[2]).resolve().as_posix() if len(sys.argv) > 2 else ""
 recipes = list(root.rglob("craft-blueprints-nextcloud/nextcloud-client/nextcloud-client.py"))
 if not recipes:
     raise SystemExit("No encontré la receta nextcloud-client.py de Craft")
@@ -22,7 +23,8 @@ for recipe in recipes:
         'self.defines["company"] = "Nextcloud GmbH"': 'self.defines["company"] = "Informac"',
         'self.applicationExecutable = "nextcloud"': 'self.applicationExecutable = "informacnube"\n'
         '        self.defines["productname"] = "Informac Nube"\n'
-        '        self.defines["website"] = "https://informac.cl"',
+        '        self.defines["website"] = "https://informac.cl"'
+        + (f'\n        self.defines["icon"] = r"{icon}"' if icon else ''),
     }
     for old, new in replacements.items():
         if old not in text:
