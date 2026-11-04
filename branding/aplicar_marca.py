@@ -51,6 +51,12 @@ text = set_value(text, "APPLICATION_UPDATE_URL", "https://nube.informac.net/apps
 text = set_value(text, "APPLICATION_HELP_URL", "https://nube.informac.net/apps/informacnube/conectar")
 text = set_value(text, "APPLICATION_VIRTUALFILE_SUFFIX", "informacnube")
 text = set_value(text, "NEXTCLOUD_BACKGROUND_COLOR", "#22394A")
+# Servidor fijo: el usuario solo pone su correo y clave. (La opción de Craft para esto solo existe en Mac,
+# por eso se fija aquí directamente.)
+text = set_value(text, "APPLICATION_SERVER_URL", "https://nube.informac.net")
+text, n = re.subn(r'set\(\s*APPLICATION_SERVER_URL_ENFORCE\s+\w+\s*\)', 'set( APPLICATION_SERVER_URL_ENFORCE ON )', text)
+if n == 0:
+    raise SystemExit("No encontré APPLICATION_SERVER_URL_ENFORCE en NEXTCLOUD.cmake")
 cmake.write_text(text, encoding="utf-8")
 print("NEXTCLOUD.cmake con marca Informac Nube")
 

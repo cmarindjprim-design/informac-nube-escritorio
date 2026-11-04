@@ -23,7 +23,11 @@ for recipe in recipes:
         'self.defines["company"] = "Nextcloud GmbH"': 'self.defines["company"] = "Informac"',
         'self.applicationExecutable = "nextcloud"': 'self.applicationExecutable = "informacnube"\n'
         '        self.defines["productname"] = "Informac Nube"\n'
-        '        self.defines["website"] = "https://informac.cl"'
+        '        self.defines["website"] = "https://informac.cl"\n'
+        # Accesos directos: menú Inicio y escritorio (la receta oficial no crea ninguno)
+        '        self.defines["shortcuts"] = [{"name": "Informac Nube", "target": "bin/informacnube.exe", "description": "Informac Nube"}]\n'
+        '        self.defines["sections"] = \'Section "Acceso directo en el escritorio"\\nSetOutPath "$INSTDIR\\\\bin"\\nCreateShortCut "$DESKTOP\\\\Informac Nube.lnk" "$INSTDIR\\\\bin\\\\informacnube.exe"\\nSectionEnd\\n\'\n'
+        '        self.defines["un_sections"] = \'Section "un.escritorio"\\nDelete "$DESKTOP\\\\Informac Nube.lnk"\\nSectionEnd\\n\''
         ,
     }
     for old, new in replacements.items():
