@@ -101,6 +101,12 @@ jobs:
           Get-ChildItem -Recurse -Path "${{ github.workspace }}\${{ env.CRAFT_TARGET }}\tmp" -Include *.exe,*.msi | Where-Object { $_.Length -gt 10MB } | ForEach-Object { Copy-Item $_.FullName salida\ }
           Get-ChildItem salida | ForEach-Object { Rename-Item $_.FullName ("InformacNube-" + "${{ steps.ver.outputs.version }}".TrimStart('v') + "-Windows-x64" + $_.Extension) }
           if (-not (Get-ChildItem salida)) { throw "No se generó el instalador" }
+          # Control: el instalador TIENE que traer el programa (informacnube.exe). Si no, no se publica.
+          $inst = Get-ChildItem salida | Select-Object -First 1
+          7z e -y -ochk $inst.FullName "*.7z" | Out-Null
+          $lista = Get-ChildItem chk -Filter *.7z | ForEach-Object { 7z l $_.FullName }
+          if (-not ($lista | Select-String 'informacnube\.exe')) { throw "El instalador no trae informacnube.exe: no se publica" }
+          Write-Host "Control OK: el instalador trae informacnube.exe"
           # Copia con nombre fijo: es la que descarga la página "Conectar mi computador" de la nube.
           $first = Get-ChildItem salida | Select-Object -First 1
           Copy-Item $first.FullName ("salida\InformacNube-Windows-x64" + $first.Extension)

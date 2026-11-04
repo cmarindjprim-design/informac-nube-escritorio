@@ -33,6 +33,18 @@ for recipe in recipes:
     recipe.write_text(text, encoding="utf-8")
     print("receta ajustada:", recipe)
 
+# Lista negra: la receta oficial borra del paquete todo .exe que no se llame "nextcloud...".
+# Como nuestro programa se llama "informacnube.exe", quedaba fuera y el instalador no traía el programa.
+for bl in root.rglob("craft-blueprints-nextcloud/nextcloud-client/blacklist.txt"):
+    t = bl.read_text(encoding="utf-8")
+    viejo = "bin/(?!(nextcloud|nextcloudcmd|QtWebEngineProcess)).*\\.exe"
+    nuevo = "bin/(?!(informacnube|informacnubecmd|nextcloud|nextcloudcmd|QtWebEngineProcess)).*\\.exe"
+    if viejo in t:
+        bl.write_text(t.replace(viejo, nuevo), encoding="utf-8")
+        print("lista negra ajustada:", bl)
+    elif "informacnube" not in t:
+        raise SystemExit("No pude ajustar la lista negra de ejecutables: " + str(bl))
+
 # Ícono del instalador: Craft usa por defecto su propio "craft.ico". Lo reemplazamos por el de Informac
 # en su ubicación original (así no dependemos de rutas externas, que NSIS no siempre encuentra).
 if icon:
