@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Informac Nube · La nube de su empresa</title>
 <meta name="description" content="Informac Nube: los archivos de su empresa en una carpeta del Explorador de Windows, como SharePoint, con permisos por área, versiones y papelera. Precio fijo por empresa, en pesos chilenos.">
-<link rel="icon" href="img/logo.png">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta name="theme-color" content="#0A1A2F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
@@ -44,7 +47,7 @@ p{margin:0}
 .top.solid{background:rgba(10,26,47,.92);backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(255,255,255,.08)}
 .top .w{display:flex;align-items:center;gap:30px;height:84px}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff}
-.brand svg{width:52px;height:41px}
+.brand img{height:46px;width:auto}
 .brand .wm{display:flex;align-items:baseline;gap:6px;font-size:27px;line-height:1;letter-spacing:-.02em}.brand .wm span{font-weight:500;color:#DCE6F2}.brand .wm b{font-weight:800;color:#fff;font-size:27px}
 .brand b{display:block;font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1}
 .brand small{display:block;font-size:11px;font-weight:700;letter-spacing:.24em;margin-top:4px;color:#DCE6F2}
@@ -53,7 +56,7 @@ p{margin:0}
 .top nav a.l:hover{color:#fff;border-bottom-color:var(--red)}
 .top .btn{height:46px;padding:0 20px;font-size:15px}.tl-s{display:none}@media (max-width:560px){.tl-l{display:none}.tl-s{display:inline}}
 @media (max-width:1000px){.top nav a.l.h{display:none}}
-@media (max-width:560px){.top nav a.l{display:none}.brand .wm,.brand .wm b{font-size:21px}.brand svg{width:40px;height:32px}.top .btn{padding:0 14px;font-size:14px}.top .w{gap:10px}}
+@media (max-width:560px){.top nav a.l{display:none}.brand img{height:34px}.top .btn{padding:0 14px;font-size:14px}.top .w{gap:10px}}
 
 /* hero */
 .hero{position:relative;background:var(--night);color:#D5E0EC;overflow:hidden;padding-top:84px}
@@ -69,13 +72,13 @@ p{margin:0}
 .hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
 .scene{position:relative;justify-self:end;width:min(470px,100%);display:grid;gap:26px;justify-items:center}
 .sign{display:flex;align-items:center;gap:16px;opacity:0;animation:rise 1s .3s forwards}
-.sign svg{width:96px;height:76px;filter:drop-shadow(0 0 22px rgba(255,60,70,.55))}
+.sign img{width:min(440px,100%);height:auto;filter:drop-shadow(0 0 26px rgba(255,60,70,.35))}
 .sign span{font-size:44px;line-height:1;letter-spacing:-.02em;color:#E8EFF7;text-shadow:0 0 24px rgba(160,200,255,.45)}
 .sign b{color:#fff;font-weight:800}
 .chip{position:absolute;z-index:3;display:flex;align-items:center;gap:8px;background:rgba(15,39,68,.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:13.5px;font-weight:600;padding:9px 14px;border-radius:999px;box-shadow:0 14px 30px -12px rgba(0,0,0,.6);opacity:0;animation:rise .7s forwards,bob 6s ease-in-out infinite}
 .chip svg{width:16px;height:16px;fill:none;stroke:#FF5A64;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -8px}}
-@media (max-width:900px){.chip{display:none}.scene{justify-self:start}.sign span{font-size:32px}.sign svg{width:70px;height:56px}}
+@media (max-width:900px){.chip{display:none}.scene{justify-self:start}.sign img{width:300px}}
 .float{width:100%;background:rgba(255,255,255,.96);border-radius:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);overflow:hidden;font-family:"Segoe UI",var(--f);font-size:13px;color:#1b1b1b;transform:translateY(20px);opacity:0;animation:rise .9s .6s cubic-bezier(.2,.8,.2,1) forwards}
 .float .t{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#F2F4F7;border-bottom:1px solid #E5E8EC;font-weight:600}
 .float .t svg{width:16px;height:16px}
@@ -357,10 +360,7 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
 
 <header class="top" id="top">
   <div class="w">
-    <a class="brand" href="#" aria-label="Informac Nube, inicio">
-      <svg viewBox="0 0 56 44" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF4B55"/><stop offset="1" stop-color="#C8101F"/></linearGradient></defs><path fill="url(#lg1)" d="M15 40a13 13 0 0 1-1.6-25.9A17 17 0 0 1 46 14.6 12.8 12.8 0 0 1 43.5 40z"/><path fill="#fff" d="M18 21.5a2 2 0 0 1 2-2h6l2.2 2.5H38a2 2 0 0 1 2 2V32a2 2 0 0 1-2 2H20a2 2 0 0 1-2-2z" opacity=".95"/><path d="M24.5 28.5l3 3 6-6" fill="none" stroke="#E31E2D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="wm"><span>informac</span><b>nube</b></span>
-    </a>
+    <a class="brand" href="#" aria-label="Informac Nube, inicio"><img src="img/logo-nube-oscuro.png" alt="Informac Nube · Archivos de su empresa en la nube" width="900" height="148"></a>
     <nav aria-label="Principal">
       <a class="l h" href="#como">Cómo funciona</a>
       <a class="l h" href="#funciones">Funciones</a>
@@ -387,7 +387,7 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
         </div>
       </div>
       <div class="scene" aria-hidden="true">
-        <div class="sign"><svg viewBox="0 0 56 44"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF4B55"/><stop offset="1" stop-color="#C8101F"/></linearGradient></defs><path fill="url(#lg2)" d="M15 40a13 13 0 0 1-1.6-25.9A17 17 0 0 1 46 14.6 12.8 12.8 0 0 1 43.5 40z"/><path fill="#fff" d="M18 21.5a2 2 0 0 1 2-2h6l2.2 2.5H38a2 2 0 0 1 2 2V32a2 2 0 0 1-2 2H20a2 2 0 0 1-2-2z"/><path d="M24.5 28.5l3 3 6-6" fill="none" stroke="#E31E2D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>informac <b>nube</b></span></div>
+        <div class="sign"><img src="img/logo-nube-oscuro.png" alt="" width="900" height="148"></div>
         <span class="chip" style="right:-36px;top:84px;animation-delay:1.5s,2s"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Versiones 90 días</span>
         <span class="chip" style="right:-28px;bottom:-38px;animation-delay:2.1s,1s"><svg viewBox="0 0 24 24"><path d="M4 7h16M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Papelera 30 días</span>
       <div class="float">
