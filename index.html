@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Informac Nube · Los archivos de su empresa, ordenados y seguros</title>
+<meta name="description" content="Informac Nube: una carpeta en el Explorador de Windows, como SharePoint, con permisos por área, versiones y papelera. Precio fijo por empresa, en pesos chilenos.">
+<link rel="icon" href="img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: una página de venta que avanza como un recorrido — portada azul, producto real, números medidos, planes y calculadora. */
+:root{
+  --navy:#22394A; --navy-deep:#1A2C3A; --navy-card:#2C4A60;
+  --red:#C4122F; --red-deep:#A50F27; --gear1:#E5262B; --gear3:#A70F14;
+  --bg:#F3F6F8; --surface:#FFFFFF; --line:#DCE3E9; --ink:#1E3140; --muted:#516170; --soft:#E8EEF2;
+  --ok:#1E7E34; --okbg:#E3F3E7; --no:#B0131D; --nobg:#FBE6E8; --warn:#8A5A00; --warnbg:#FFF2D6;
+  --hero-ink:#F6F8FA; --hero-muted:#C9D6E0; --coral:#FF8A8D;
+  --bar:#7A8B99;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Figtree", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", Consolas, ui-monospace, monospace;
+  --f-lema: Georgia, "Times New Roman", serif;
+  --r:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1A23; --surface:#16252F; --line:#2A3C49; --ink:#E9EFF3; --muted:#A9B8C4; --soft:#1C2E3A;
+  --ok:#6FD38A; --okbg:#173326; --no:#FF8A8D; --nobg:#3A1A1F; --warn:#F4C46B; --warnbg:#3A2E14;
+  --bar:#6F8292; --red:#E0384F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1A23; --surface:#16252F; --line:#2A3C49; --ink:#E9EFF3; --muted:#A9B8C4; --soft:#1C2E3A;
+  --ok:#6FD38A; --okbg:#173326; --no:#FF8A8D; --nobg:#3A1A1F; --warn:#F4C46B; --warnbg:#3A2E14;
+  --bar:#6F8292; --red:#E0384F; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--navy-deep)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h2{font-size:clamp(30px,4vw,46px);line-height:1.08;font-weight:800}
+h3{font-size:21px;font-weight:600;line-height:1.25}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);font-weight:700}
+.lede{color:var(--muted);font-size:19px;max-width:62ch}
+section{padding-block:88px}
+.sec-head{display:grid;gap:14px;margin-bottom:40px}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gear1);outline-offset:3px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+
+/* barra */
+.bar-top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy-deep);border-bottom:3px solid transparent;border-image:linear-gradient(90deg,var(--gear1),var(--gear3)) 1}
+.bar-top .wrap{display:flex;align-items:center;gap:20px;padding-block:12px}
+.logo-pill{background:#FBFBF8;border-radius:10px;padding:6px 10px;display:flex}
+.logo-pill img{height:30px;width:auto;display:block}
+.nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.nav a{color:#D6E1E9;text-decoration:none;font-weight:600;font-size:15px;padding:8px 12px;border-radius:8px}
+.nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav a.cta{background:var(--gear1);color:#fff}
+.nav a.cta:hover{background:var(--gear3)}
+@media (max-width:820px){.nav a:not(.cta):not(.in){display:none}}
+
+/* portada */
+.hero{background:radial-gradient(1200px 500px at 85% -10%,rgba(229,38,43,.22),transparent 60%),linear-gradient(160deg,var(--navy-deep),var(--navy) 55%,var(--navy-card));color:var(--hero-ink);padding-block:72px 0;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:.95fr 1.15fr;gap:48px;align-items:center}
+@media (max-width:960px){.hero-grid{grid-template-columns:1fr}}
+.hero .eyebrow{color:var(--coral)}
+.hero h1{font-size:clamp(40px,6vw,72px);line-height:1;font-weight:800;margin-top:14px}
+.hero h1 em{font-style:normal;color:#fff;background:linear-gradient(90deg,var(--gear1),#ff6b5e);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero .lede{color:var(--hero-muted);margin-top:20px}
+.hero-actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;padding:14px 20px;border-radius:12px;text-decoration:none;border:0;cursor:pointer;font-family:var(--f-body)}
+.btn-red{background:var(--gear1);color:#fff}.btn-red:hover{background:var(--gear3)}
+.btn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25)}.btn-ghost:hover{background:rgba(255,255,255,.18)}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:40px;padding-bottom:56px}
+@media (max-width:520px){.hero-stats{grid-template-columns:1fr}}
+.hstat{border-top:2px solid rgba(255,255,255,.18);padding-top:12px}
+.hstat b{display:block;font-family:var(--f-display);font-size:30px;font-weight:800;color:#fff}
+.hstat span{color:var(--hero-muted);font-size:14px}
+.shot{background:#fff;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.35);overflow:hidden;border:1px solid rgba(255,255,255,.15)}
+.shot-bar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#EEF2F5;border-bottom:1px solid #DCE3E9}
+.shot-bar i{width:10px;height:10px;border-radius:50%;background:#C9D3DB;display:block}
+.shot-bar span{margin-left:10px;font-family:var(--f-mono);font-size:12px;color:#516170;background:#fff;border-radius:6px;padding:3px 10px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shot img{display:block;width:100%;height:auto}
+.hero .shot{transform:translateY(24px) rotate(-1deg);margin-bottom:-8px}
+
+/* dolores */
+.pains{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media (max-width:900px){.pains{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.pains{grid-template-columns:1fr}}
+.pain{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:8px;align-content:start}
+.pain q{font-family:var(--f-display);font-weight:600;font-size:20px;color:var(--red);quotes:"“" "”"}
+.pain p{color:var(--muted);font-size:15px}
+.answer{margin-top:28px;background:var(--navy);color:#fff;border-radius:var(--r);padding:26px 28px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.answer b{font-family:var(--f-display);font-size:24px;font-weight:800}
+.answer span{color:var(--hero-muted)}
+
+/* producto */
+.tour{display:grid;grid-template-columns:300px 1fr;gap:28px;align-items:start}
+@media (max-width:900px){.tour{grid-template-columns:1fr}}
+.tabs{display:grid;gap:8px}
+@media (max-width:900px){.tabs{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+.tab{all:unset;cursor:pointer;display:grid;gap:3px;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.tab b{font-weight:700;font-size:16px}
+.tab small{color:var(--muted);font-size:13.5px;line-height:1.35}
+.tab[aria-selected="true"]{border-color:var(--red);box-shadow:inset 4px 0 0 var(--red);background:var(--soft)}
+.tab:focus-visible{outline:3px solid var(--gear1)}
+.stage{display:grid;gap:14px}
+.stage .shot{border-color:var(--line);box-shadow:0 18px 50px rgba(20,40,60,.14)}
+.stage .shot.narrow{max-width:560px}
+.caption{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.caption h3{font-size:22px}
+.caption p{color:var(--muted)}
+.note{font-size:13.5px;color:var(--muted)}
+
+/* métricas */
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:860px){.metrics{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.metrics{grid-template-columns:1fr}}
+.metric{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:6px}
+.metric .k{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.metric .v{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;color:var(--ink)}
+.metric .v small{font-size:20px;font-weight:600;color:var(--muted);margin-left:4px}
+.metric p{color:var(--muted);font-size:15px}
+.metric.on{border-color:var(--ok)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;width:max-content}
+.chip.ok{background:var(--okbg);color:var(--ok)}
+.chip.warn{background:var(--warnbg);color:var(--warn)}
+.chip.no{background:var(--nobg);color:var(--no)}
+.method{margin-top:18px;font-size:14px;color:var(--muted);max-width:90ch}
+.timebox{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:14px}
+.timebox .row{display:grid;grid-template-columns:200px 1fr 90px;gap:14px;align-items:center}
+@media (max-width:560px){.timebox .row{grid-template-columns:1fr 70px}.timebox .row .track{grid-column:1/-1;order:3}}
+.track{height:12px;background:var(--soft);border-radius:999px;overflow:hidden}
+.track i{display:block;height:100%;background:linear-gradient(90deg,var(--gear1),var(--gear3));border-radius:999px}
+
+/* planes */
+.toggle{display:inline-flex;background:var(--soft);border-radius:999px;padding:4px;gap:4px;border:1px solid var(--line)}
+.toggle button{all:unset;cursor:pointer;padding:9px 16px;border-radius:999px;font-weight:700;font-size:15px;color:var(--muted)}
+.toggle button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.toggle button:focus-visible{outline:3px solid var(--gear1)}
+.save-tag{font-size:12px;color:var(--ok);font-weight:800;margin-left:6px}
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:26px;align-items:stretch}
+@media (max-width:1000px){.plans{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.plans{grid-template-columns:1fr}}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.plan.star{background:var(--navy);color:#fff;border-color:var(--navy);position:relative}
+.plan.star .muted,.plan.star li{color:var(--hero-muted)}
+.badge{position:absolute;top:-12px;left:24px;background:var(--gear1);color:#fff;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
+.plan h3{font-size:22px}
+.price{font-family:var(--f-display);font-weight:800;font-size:40px;line-height:1}
+.price small{font-family:var(--f-body);font-size:14px;font-weight:500}
+.muted{color:var(--muted);font-size:14px}
+.specs{display:flex;gap:10px;flex-wrap:wrap}
+.spec{font-family:var(--f-mono);font-weight:700;font-size:14px;padding:6px 10px;border-radius:8px;background:var(--soft)}
+.plan.star .spec{background:rgba(255,255,255,.12);color:#fff}
+.fits{list-style:none;padding:0;margin:0;display:grid;gap:6px;font-size:14.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
+.plan.star .fits{border-color:rgba(255,255,255,.2)}
+.fits b{color:var(--ink)} .plan.star .fits b{color:#fff}
+.extras{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.extras span{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14.5px}
+
+/* calculadora */
+.calc{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
+@media (max-width:920px){.calc{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:22px}
+.field{display:grid;gap:8px}
+.field label{font-weight:700;display:flex;justify-content:space-between;gap:10px}
+.field output{font-family:var(--f-mono);font-weight:700;color:var(--red)}
+input[type=range]{width:100%;accent-color:var(--gear1)}
+.ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.reco{background:var(--soft);border-radius:14px;padding:16px;display:grid;gap:4px}
+.reco b{font-family:var(--f-display);font-size:22px}
+.results{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:18px;min-width:0}
+#bars{display:grid;gap:16px}
+.rbar{display:grid;grid-template-columns:240px 1fr 110px;gap:12px;align-items:center}
+@media (max-width:560px){.rbar{grid-template-columns:1fr 100px}.rbar .rtrack{grid-column:1/-1;order:3}}
+.rname b{display:block;font-size:15.5px}
+.rname small{color:var(--muted);font-size:12.5px;line-height:1.3;display:block}
+.rtrack{height:30px;background:var(--soft);border-radius:8px;overflow:hidden}
+.rtrack i{display:block;height:100%;background:var(--bar);border-radius:8px;transition:width .35s ease}
+.rbar.us .rtrack i{background:linear-gradient(90deg,var(--gear1),var(--gear3))}
+.rbar.us .rname b,.rbar.us .rval{color:var(--red)}
+.rval{font-family:var(--f-mono);font-weight:700;text-align:right;font-size:15px}
+.savebox{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px}
+.savebox .big{font-family:var(--f-display);font-weight:800;font-size:48px;color:var(--ok);line-height:1}
+.savebox p{color:var(--muted);max-width:50ch}
+
+/* tabla */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:15px}
+th,td{padding:13px 16px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+th.us{color:#fff;background:var(--navy)}
+td.us{background:color-mix(in srgb,var(--red) 6%,var(--surface));font-weight:600}
+tr:last-child td{border-bottom:0}
+td .chip{white-space:nowrap}
+
+/* cierre */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:820px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:8px}
+.step .n{font-family:var(--f-display);font-weight:800;font-size:40px;color:var(--red);line-height:1}
+.offer{margin-top:28px;background:linear-gradient(135deg,var(--red-deep),var(--gear1));color:#fff;border-radius:22px;padding:30px;display:grid;grid-template-columns:repeat(2,1fr);gap:18px;align-items:center}
+.offer .incl span{color:#fff;font-size:17px;line-height:1.7}
+@media (max-width:820px){.offer{grid-template-columns:1fr}}
+.offer div b{display:block;font-family:var(--f-display);font-size:48px;font-weight:800;line-height:1}
+.offer div span{color:#FFE4E6}
+.offer .foot{grid-column:1/-1;font-size:14px;color:#FFE4E6}
+.contact{background:var(--navy-deep);color:#fff;padding-block:64px}
+.contact .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center}
+@media (max-width:860px){.contact .wrap{grid-template-columns:1fr}}
+.contact h2{color:#fff}
+.contact p{color:var(--hero-muted)}
+.cards{display:grid;gap:10px}
+.ccard{display:flex;justify-content:space-between;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:12px 14px}
+.ccard span{font-family:var(--f-mono);font-weight:700;user-select:all;overflow-wrap:anywhere}
+.copy{all:unset;cursor:pointer;font-size:13px;font-weight:700;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.12)}
+.copy:focus-visible{outline:3px solid var(--gear1)}
+footer{background:var(--navy-deep);color:var(--hero-muted);border-top:1px solid rgba(255,255,255,.1)}
+footer .wrap{padding-block:26px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline}
+.lema{font-family:var(--f-lema);font-style:italic;color:var(--coral);font-size:22px}
+.src{font-size:12.5px;max-width:80ch}
+
+/* cómo funciona */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:f}
+@media (max-width:960px){.flow{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.flow{grid-template-columns:1fr}}
+.fstep{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:10px;align-content:start;position:relative}
+.fstep .ic{width:52px;height:52px;border-radius:14px;background:var(--soft);display:grid;place-items:center}
+.fstep .ic svg{width:28px;height:28px;stroke:var(--red);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.fstep .n{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;color:var(--muted);font-weight:700}
+.fstep p{color:var(--muted);font-size:15px}
+.analogy{margin-top:22px;display:flex;gap:16px;align-items:center;background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:18px 22px}
+.analogy b{font-family:var(--f-display);font-size:20px}
+.analogy p{color:var(--muted)}
+
+/* demo: explorador simulado */
+.demo{display:grid;grid-template-columns:1fr 330px;gap:20px;align-items:start}
+@media (max-width:1000px){.demo{grid-template-columns:1fr}}
+.win{background:#fff;color:#1b1b1b;border-radius:12px;box-shadow:0 22px 60px rgba(20,40,60,.18);border:1px solid #D5DCE2;overflow:hidden;font-family:"Segoe UI",system-ui,sans-serif;font-size:14px;min-width:0}
+.win-title{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#F3F3F3;border-bottom:1px solid #E1E1E1}
+.win-title .path{flex:1;min-width:0;background:#fff;border:1px solid #DADADA;border-radius:6px;padding:4px 10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.win-title .dots{display:flex;gap:14px;color:#666;font-size:13px}
+.win-tool{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid #EAEAEA;background:#FAFAFA}
+.wbtn{all:unset;cursor:pointer;font-size:13px;padding:6px 10px;border-radius:6px;display:inline-flex;gap:6px;align-items:center;color:#1b1b1b}
+.wbtn:hover:not([disabled]){background:#E9EEF3}
+.wbtn[disabled]{opacity:.38;cursor:default}
+.wbtn:focus-visible{outline:2px solid #0067C0}
+.wbtn.red{color:#B0131D}
+.win-body{display:grid;grid-template-columns:200px 1fr;min-height:330px}
+@media (max-width:640px){.win-body{grid-template-columns:1fr}.side{display:none}}
+.side{border-right:1px solid #EAEAEA;padding:8px 6px;display:grid;align-content:start;gap:2px;background:#FBFBFB}
+.side .it{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:6px;color:#333;font-size:13.5px}
+.side .it.sel{background:#DDEBF7}
+.side .it.cloud{font-weight:600}
+.side .sub{padding-left:26px}
+.side hr{border:0;border-top:1px solid #EAEAEA;margin:6px 4px}
+.list{min-width:0;display:grid;align-content:start}
+.lrow{display:grid;grid-template-columns:26px 1fr 64px 110px;gap:8px;align-items:center;padding:7px 12px;border-bottom:1px solid #F1F1F1;cursor:pointer;user-select:none}
+@media (max-width:520px){.lrow{grid-template-columns:26px 1fr 54px}.lrow .when{display:none}}
+.lrow.head{cursor:default;color:#666;font-size:12.5px;background:#fff}
+.lrow:not(.head):hover{background:#F2F7FC}
+.lrow.sel{background:#CCE4F7}
+.lrow .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .when{color:#666;font-size:12.5px}
+.st{display:inline-grid;place-items:center;width:20px;height:20px}
+.st svg{width:18px;height:18px}
+.st.cloud svg{stroke:#0067C0;fill:none;stroke-width:1.8}
+.st.ok svg{fill:#1E8E3E}
+.st.sync svg{stroke:#0067C0;fill:none;stroke-width:2.2;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ficon{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:4px;font-size:10px;font-weight:800;color:#fff}
+.empty{padding:26px;color:#666;text-align:center}
+.lock{padding:26px;color:#8A5A00;background:#FFF7E3;margin:12px;border-radius:8px;text-align:center}
+.win-status{display:flex;justify-content:space-between;gap:10px;padding:6px 12px;background:#F7F7F7;border-top:1px solid #EAEAEA;color:#555;font-size:12.5px}
+.panel-r{display:grid;gap:14px}
+.who{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:10px}
+.who .toggle{flex-wrap:wrap}
+.narr{background:var(--navy);color:#fff;border-radius:var(--r);padding:18px;display:grid;gap:10px;min-height:170px}
+.narr .eyebrow{color:var(--coral)}
+.narr p{color:var(--hero-muted);font-size:15px}
+.narr b{color:#fff}
+.vers{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px}
+.vers[hidden]{display:none}
+.vrow{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:14px;border-top:1px solid var(--line);padding-top:8px}
+.vrow button{all:unset;cursor:pointer;font-weight:700;color:var(--red);font-size:13px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin-top:14px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+
+/* virtudes */
+.virt{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:900px){.virt{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.virt{grid-template-columns:1fr}}
+.v{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:8px;align-content:start}
+.v .tag{font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--red);letter-spacing:.08em;text-transform:uppercase}
+.v p{color:var(--muted);font-size:15px}
+
+/* descarga */
+.dl{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media (max-width:820px){.dl{grid-template-columns:1fr}}
+.dcard{border-radius:20px;padding:26px;display:grid;gap:12px;align-content:start}
+.dcard.win{background:var(--navy);color:#fff;border:0;box-shadow:none;font-family:var(--f-body);font-size:inherit}
+.dcard.win p{color:var(--hero-muted)}
+.dcard.web{background:var(--surface);border:1px solid var(--line)}
+.dcard.web p{color:var(--muted)}
+.dcard h3{font-size:24px}
+.dcard ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.dcard.win ol{color:var(--hero-muted)}
+.nav a.in{border:1px solid rgba(255,255,255,.3)}
+</style>
+</head>
+<body>
+
+<header class="bar-top">
+  <div class="wrap">
+    <a class="logo-pill" href="#inicio" aria-label="Informac, inicio"><img src="img/logo.png" alt="Informac · Somos Solución"></a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#como">Cómo funciona</a>
+      <a href="#demo">Pruébelo</a>
+      <a href="#planes">Planes</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#contacto">Contacto</a>
+      <a class="in" href="https://nube.informac.net/">Ingresar</a>
+      <a class="cta" href="#descargar">Descargar</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Informac Nube</p>
+      <h1>La bodega de archivos de su empresa. <em>Con todo su equipo adentro.</em></h1>
+      <p class="lede">Una carpeta en el Explorador de Windows, igual que SharePoint, a precio fijo por empresa y en pesos chilenos. Usted decide quién ve qué, y Informac la cuida.</p>
+      <div class="hero-actions">
+        <a class="btn btn-red" href="#demo">Pruébelo aquí</a>
+        <a class="btn btn-ghost" href="#como">Cómo funciona</a>
+        <a class="btn btn-ghost" href="https://nube.informac.net/">Ingresar a mi nube</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><b class="num">$29.990</b><span>al mes, 10 personas y 500 GB</span></div>
+        <div class="hstat"><b class="num">57%</b><span>menos que Microsoft 365 Basic</span></div>
+        <div class="hstat"><b>3 niveles</b><span>para recuperar lo borrado</span></div>
+      </div>
+    </div>
+    <figure class="shot" style="margin:0">
+      <div class="shot-bar"><i></i><i></i><i></i><span>nube.informac.net · Mi equipo</span></div>
+      <img src="img/cap_equipo.webp" width="1568" height="741" alt="Panel del equipo de una empresa de ejemplo: integrantes, áreas a las que accede cada uno y permisos por área.">
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Lo que vemos en las pymes</p>
+      <h2>¿Le suena alguna de estas?</h2>
+    </div>
+    <div class="pains">
+      <div class="pain"><q>Te lo mando por correo</q><p>Diez versiones del mismo Excel y nadie sabe cuál es la buena.</p></div>
+      <div class="pain"><q>Está en el PC de la oficina</q><p>Fuera de la oficina, nadie llega a los archivos.</p></div>
+      <div class="pain"><q>Se borró y no hay respaldo</q><p>Un clic equivocado y se pierde el trabajo de meses.</p></div>
+      <div class="pain"><q>Pagamos por cada usuario</q><p>Cada persona nueva sube la cuenta, y en dólares.</p></div>
+    </div>
+    <div class="answer"><b>Informac Nube ordena las cuatro.</b><span>Una sola bodega para la empresa, con versiones, papelera, permisos por área y un precio que no cambia cuando entra alguien nuevo.</span></div>
+  </div>
+</section>
+
+<section id="como">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Cómo funciona</p>
+      <h2>Una carpeta en su Windows que vive en la nube</h2>
+      <p class="lede">Su equipo sigue trabajando como siempre: abre, guarda y arrastra archivos en el Explorador de Windows. Informac Nube se encarga del resto.</p>
+    </div>
+    <div class="flow">
+      <div class="fstep"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div><span class="n">PASO 1</span><h3>Instala el programa</h3><p>Un instalador de un clic. Aparece "Informac Nube" en la barra lateral del Explorador, igual que OneDrive o SharePoint.</p></div>
+      <div class="fstep"><div class="ic"><svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.9-9.9A6 6 0 0 1 17.6 8 4.5 4.5 0 0 1 17 18z"/></svg></div><span class="n">PASO 2</span><h3>Ve sus archivos, sin llenar el disco</h3><p>Todo aparece en la carpeta, pero solo se descarga lo que abre. Una nube pequeña junto al nombre indica que está en la nube.</p></div>
+      <div class="fstep"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></div><span class="n">PASO 3</span><h3>Guarda y se sube solo</h3><p>Al guardar en Word o Excel, el cambio se sube a la nube y queda la versión anterior por si la necesita.</p></div>
+      <div class="fstep"><div class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></div><span class="n">PASO 4</span><h3>Desde cualquier lugar</h3><p>Fuera de la oficina entra desde el navegador o el celular, con su usuario y clave, y ve exactamente lo mismo.</p></div>
+    </div>
+    <div class="analogy"><b>Como una bodega con casilleros.</b><p>La empresa tiene una bodega en la nube; cada área es un casillero y cada persona tiene llave solo de los suyos. El administrador tiene la llave maestra.</p></div>
+  </div>
+</section>
+
+<section id="demo" style="background:var(--soft)">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Pruébelo aquí mismo</p>
+      <h2>Haga clic y vea cómo funciona</h2>
+      <p class="lede">Una simulación del Explorador de Windows con Informac Nube instalado, con una empresa de ejemplo. Abra un archivo, guarde un cambio, bórrelo y recupérelo, o cambie de persona para ver los permisos.</p>
+    </div>
+    <div class="demo">
+      <div class="win" aria-label="Simulación del Explorador de Windows">
+        <div class="win-title"><span aria-hidden="true">📁</span><span class="path" id="d-path">Informac Nube › Constructora Andes › Obras</span><span class="dots" aria-hidden="true">—&nbsp;&nbsp;☐&nbsp;&nbsp;✕</span></div>
+        <div class="win-tool">
+          <button class="wbtn" id="d-open" disabled>📂 Abrir</button>
+          <button class="wbtn" id="d-save" disabled>💾 Guardar un cambio</button>
+          <button class="wbtn" id="d-vers" disabled>🕘 Ver versiones</button>
+          <button class="wbtn red" id="d-del" disabled>🗑 Eliminar</button>
+          <button class="wbtn" id="d-trash">♻ Papelera <span id="d-tc"></span></button>
+        </div>
+        <div class="win-body">
+          <nav class="side" aria-label="Carpetas">
+            <span class="it">⭐ Inicio</span>
+            <span class="it">🖥 Escritorio</span>
+            <span class="it">📄 Documentos</span>
+            <hr>
+            <span class="it cloud" style="color:#C4122F">☁ Informac Nube</span>
+            <span class="it sub">🏢 Constructora Andes</span>
+            <div id="d-areas"></div>
+          </nav>
+          <div class="list" id="d-list" role="listbox" aria-label="Archivos"></div>
+        </div>
+        <div class="win-status"><span id="d-count"></span><span id="d-sync">✔ Todo al día</span></div>
+      </div>
+      <div class="panel-r">
+        <div class="who">
+          <b>Ver como</b>
+          <div class="toggle" role="group" aria-label="Persona">
+            <button type="button" data-who="gerente" aria-pressed="true">Gerente</button>
+            <button type="button" data-who="admin" aria-pressed="false">Administración</button>
+            <button type="button" data-who="terreno" aria-pressed="false">Terreno</button>
+          </div>
+          <p class="muted" id="d-who-txt"></p>
+        </div>
+        <div class="narr" aria-live="polite">
+          <p class="eyebrow">Qué está pasando</p>
+          <p id="d-narr"><b>Elija un archivo</b> de la lista. La nube azul junto al nombre significa que está en la nube y todavía no ocupa espacio en este computador.</p>
+        </div>
+        <div class="vers" id="d-vbox" hidden>
+          <b id="d-vtitle">Versiones</b>
+          <div id="d-vlist"></div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><span class="st cloud"><svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.9-9.9A6 6 0 0 1 17.6 8 4.5 4.5 0 0 1 17 18z"/></svg></span>En la nube (no ocupa espacio)</span>
+      <span><span class="st sync"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.2"/></svg></span>Sincronizando</span>
+      <span><span class="st ok"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 12.5l3 3 7-7" stroke="#fff" stroke-width="2.4" fill="none"/></svg></span>Disponible en este computador</span>
+    </div>
+  </div>
+</section>
+
+<section id="virtudes">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Por qué Informac Nube</p>
+      <h2>Lo que gana su empresa</h2>
+    </div>
+    <div class="virt">
+      <div class="v"><span class="tag">Precio</span><h3>Un precio por empresa</h3><p>No paga por cada persona. Cuando entra alguien nuevo, la cuenta no sube. En pesos chilenos y sin sorpresas por el dólar.</p></div>
+      <div class="v"><span class="tag">Costumbre</span><h3>Igual que SharePoint</h3><p>La carpeta aparece en el Explorador de Windows. Nadie tiene que aprender un programa nuevo.</p></div>
+      <div class="v"><span class="tag">Espacio</span><h3>No llena los discos</h3><p>Con archivos virtuales, cada PC ve todo pero solo descarga lo que abre. Ideal para planos y carpetas grandes.</p></div>
+      <div class="v"><span class="tag">Orden</span><h3>Permisos por área</h3><p>Cada área es un casillero. El administrador decide quién edita, quién solo mira y quién no entra, desde un panel simple.</p></div>
+      <div class="v"><span class="tag">Tranquilidad</span><h3>Nada se pierde</h3><p>Versiones de cada archivo por 90 días y papelera de 30 días. Si la persona no lo recupera, lo hace el administrador o Informac.</p></div>
+      <div class="v"><span class="tag">Cercanía</span><h3>Soporte de verdad</h3><p>Le atiende Informac, en español y en Chile. Creamos su espacio, trasladamos sus archivos e instalamos el programa en sus PC.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="producto">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Capturas reales del portal</p>
+      <h2>Así se ve por dentro</h2>
+      <p class="lede">Son pantallas de nube.informac.net tal como funciona hoy, con una empresa de ejemplo. Elija una función para verla.</p>
+    </div>
+    <div class="tour">
+      <div class="tabs" role="tablist" aria-label="Funciones">
+        <button class="tab" role="tab" id="t-archivos" aria-selected="true" aria-controls="stage"><b>Archivos por área</b><small>Cada área es una carpeta de la empresa.</small></button>
+        <button class="tab" role="tab" id="t-permisos" aria-selected="false" aria-controls="stage"><b>Permisos por persona</b><small>Editar, solo ver o sin acceso.</small></button>
+        <button class="tab" role="tab" id="t-versiones" aria-selected="false" aria-controls="stage"><b>Versiones</b><small>Vuelva a cualquier versión anterior.</small></button>
+        <button class="tab" role="tab" id="t-papelera" aria-selected="false" aria-controls="stage"><b>Papelera</b><small>Lo borrado se recupera con un clic.</small></button>
+        <button class="tab" role="tab" id="t-compartir" aria-selected="false" aria-controls="stage"><b>Compartir</b><small>Con su equipo o con externos por enlace.</small></button>
+        <button class="tab" role="tab" id="t-conectar" aria-selected="false" aria-controls="stage"><b>Conectar el computador</b><small>La carpeta aparece en Windows.</small></button>
+      </div>
+      <div class="stage" id="stage" role="tabpanel" aria-live="polite">
+        <figure class="shot" id="shot" style="margin:0">
+          <div class="shot-bar"><i></i><i></i><i></i><span id="shot-url">nube.informac.net · Archivos</span></div>
+          <img id="shot-img" src="img/cap_archivos.webp" width="1568" height="320" alt="">
+        </figure>
+        <div class="caption"><h3 id="cap-t">Archivos por área</h3><p id="cap-p"></p></div>
+        <p class="note">Empresa y archivos de ejemplo. La versión del programa para Mac está en preparación; en Mac se trabaja desde el navegador.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="metricas">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Medido en nuestro servidor</p>
+      <h2>Números reales, no promesas</h2>
+      <p class="lede">Medimos nube.informac.net desde un computador conectado a internet en Santiago. Así rinde la plataforma donde van a trabajar sus archivos.</p>
+    </div>
+    <div class="metrics">
+      <div class="metric"><span class="k">Tiempo de respuesta</span><span class="v num">82<small>ms</small></span><p>Mediana de 15 consultas seguidas. Menos de una décima de segundo por clic.</p></div>
+      <div class="metric"><span class="k">Velocidad de subida</span><span class="v num">48<small>Mbps</small></span><p>Promedio al subir archivos de 20 y 50 MB.</p></div>
+      <div class="metric"><span class="k">Velocidad de bajada</span><span class="v num">61<small>Mbps</small></span><p>Promedio al descargar archivos de 50 MB.</p></div>
+      <div class="metric on"><span class="k">Conexión</span><span class="chip ok">Cifrada · HTTPS + HSTS</span><p>Certificado vigente hasta enero de 2027, con renovación automática.</p></div>
+      <div class="metric on"><span class="k">Acceso</span><span class="chip ok">Segundo factor disponible</span><p>Código en el celular además de la clave. Obligatorio para administradores.</p></div>
+      <div class="metric on"><span class="k">Respaldo</span><span class="chip ok">Diario, automático</span><p>Copia cada noche a las 03:30, más papelera de 30 días y versiones de cada archivo por 90 días.</p></div>
+    </div>
+    <div class="timebox" aria-label="Tiempo estimado de subida">
+      <h3>¿Cuánto tarda en subir?</h3>
+      <div class="row"><span>Contrato PDF · 5 MB</span><div class="track"><i style="width:3%"></i></div><b class="num">≈ 1 s</b></div>
+      <div class="row"><span>Planilla de obra · 20 MB</span><div class="track"><i style="width:12%"></i></div><b class="num">≈ 3 s</b></div>
+      <div class="row"><span>Plano CAD · 100 MB</span><div class="track"><i style="width:55%"></i></div><b class="num">≈ 17 s</b></div>
+      <div class="row"><span>Carpeta de fotos · 180 MB</span><div class="track"><i style="width:100%"></i></div><b class="num">≈ 30 s</b></div>
+    </div>
+    <p class="method">Método: medición del 27 de octubre de 2026 desde una conexión doméstica en Santiago, con archivos de prueba de 20 y 50 MB. Los tiempos de cada empresa dependen de su propio internet: con una conexión más rápida, sube más rápido.</p>
+  </div>
+</section>
+
+<section id="planes" style="background:var(--soft)">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Planes</p>
+      <h2>Un precio por empresa, no por persona</h2>
+      <p class="lede">Todos los planes incluyen la carpeta en Windows, acceso web y móvil, áreas con permisos, versiones, papelera, respaldo diario y soporte de Informac.</p>
+    </div>
+    <div class="toggle" role="group" aria-label="Forma de pago">
+      <button type="button" id="pm" aria-pressed="true">Mensual</button>
+      <button type="button" id="pa" aria-pressed="false">Anual <span class="save-tag">2 meses gratis</span></button>
+    </div>
+    <div class="plans" id="plans"></div>
+    <div class="extras"><span><b>+100 GB</b> $4.990 al mes</span><span><b>+5 usuarios</b> $4.990 al mes</span><span><b>Puesta en marcha y traslado</b> <s>$49.990</s> gratis hasta el 31-01-2027</span></div>
+    <p class="method">Valores en pesos chilenos, más IVA. Las equivalencias de espacio usan tamaños típicos: foto de celular 4 MB, documento Word 2 MB, plano PDF 25 MB.</p>
+  </div>
+</section>
+
+<section id="calculadora">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Calculadora</p>
+      <h2>¿Cuánto pagaría su empresa?</h2>
+      <p class="lede">Mueva los controles con los datos de su empresa. Comparamos con los planes de lista de Microsoft, Google y Dropbox que cubren ese espacio.</p>
+    </div>
+    <div class="calc">
+      <form class="panel" id="calc" onsubmit="return false">
+        <div class="field">
+          <label for="users">Personas que usan archivos <output id="o-users" class="num">10</output></label>
+          <input type="range" id="users" min="1" max="60" value="10">
+          <div class="ticks"><span>1</span><span>20</span><span>40</span><span>60</span></div>
+        </div>
+        <div class="field">
+          <label for="gb">Espacio que necesita <output id="o-gb" class="num">500 GB</output></label>
+          <input type="range" id="gb" min="0" max="40" value="12">
+          <div class="ticks"><span>20 GB</span><span>500 GB</span><span>1 TB</span><span>3 TB</span></div>
+        </div>
+        <div class="toggle" role="group" aria-label="Período">
+          <button type="button" id="cm" aria-pressed="true">Por mes</button>
+          <button type="button" id="ca" aria-pressed="false">Por año</button>
+        </div>
+        <div class="reco" aria-live="polite"><span class="muted">Plan Informac Nube recomendado</span><b id="reco-name">Pyme</b><span class="muted" id="reco-detail">500 GB · hasta 10 usuarios</span></div>
+      </form>
+      <div class="results" aria-live="polite">
+        <div id="bars"></div>
+        <div class="savebox"><span class="big num" id="save-pct">57%</span><p id="save-txt"></p></div>
+        <p class="note">Precios de lista en dólares al cambio de $990, sin IVA. Microsoft 365 y Google Workspace incluyen además correo; Dropbox cobra un mínimo de 3 usuarios. Informac Nube no incluye correo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="comparar" style="background:var(--soft)">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Comparación</p>
+      <h2>Frente a los grandes</h2>
+      <p class="lede">Dónde ganamos y dónde no. Preferimos que lo sepa antes de contratar.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Característica</th><th class="us">Informac Nube</th><th>Microsoft 365 Basic</th><th>Google Workspace</th><th>Dropbox Business</th></tr></thead>
+        <tbody>
+          <tr><td>Cómo se cobra</td><td class="us"><span class="chip ok">Por empresa</span></td><td><span class="chip warn">Por persona</span></td><td><span class="chip warn">Por persona</span></td><td><span class="chip warn">Por persona, mínimo 3</span></td></tr>
+          <tr><td>Moneda</td><td class="us"><span class="chip ok">Pesos, precio fijo</span></td><td><span class="chip warn">Dólares</span></td><td><span class="chip warn">Dólares</span></td><td><span class="chip warn">Dólares</span></td></tr>
+          <tr><td>Carpeta en el Explorador de Windows</td><td class="us"><span class="chip ok">Sí</span></td><td><span class="chip ok">Sí</span></td><td><span class="chip ok">Sí</span></td><td><span class="chip ok">Sí</span></td></tr>
+          <tr><td>Permisos por área y persona</td><td class="us"><span class="chip ok">Sí, desde un panel simple</span></td><td><span class="chip ok">Sí, más complejo</span></td><td><span class="chip ok">Sí</span></td><td><span class="chip ok">Sí</span></td></tr>
+          <tr><td>Recuperar lo borrado</td><td class="us"><span class="chip ok">3 niveles: persona, administrador e Informac</span></td><td><span class="chip ok">Papelera y versiones</span></td><td><span class="chip ok">Papelera y versiones</span></td><td><span class="chip ok">Papelera y versiones</span></td></tr>
+          <tr><td>Soporte</td><td class="us"><span class="chip ok">Informac, en español, en Chile</span></td><td><span class="chip warn">Mesa de ayuda global</span></td><td><span class="chip warn">Mesa de ayuda global</span></td><td><span class="chip warn">Mesa de ayuda global</span></td></tr>
+          <tr><td>Correo y videollamadas</td><td class="us"><span class="chip no">No incluye</span></td><td><span class="chip ok">Sí</span></td><td><span class="chip ok">Sí</span></td><td><span class="chip no">No incluye</span></td></tr>
+          <tr><td>Editar Word y Excel entre varios a la vez</td><td class="us"><span class="chip warn">En preparación</span></td><td><span class="chip ok">Sí</span></td><td><span class="chip ok">Sí, con Docs y Sheets</span></td><td><span class="chip warn">Con Office web</span></td></tr>
+          <tr><td>Programa para Mac</td><td class="us"><span class="chip warn">En preparación; hoy por navegador</span></td><td><span class="chip ok">Sí</span></td><td><span class="chip ok">Sí</span></td><td><span class="chip ok">Sí</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Cómo empezamos</p>
+      <h2>En marcha en tres pasos</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><h3>Informac crea su espacio</h3><p class="muted">Con el tamaño y los usuarios de su plan, listo en el día.</p></div>
+      <div class="step"><span class="n">2</span><h3>Su administrador invita al equipo</h3><p class="muted">Crea las áreas y decide qué ve cada persona, sin depender de nosotros.</p></div>
+      <div class="step"><span class="n">3</span><h3>Cada uno trabaja desde Windows</h3><p class="muted">Instala Informac Nube y aparece la carpeta en el Explorador.</p></div>
+    </div>
+    <div class="offer" aria-label="Oferta de lanzamiento">
+      <div><b>$0</b><span>puesta en marcha (valor normal <s>$49.990</s>)</span></div>
+      <div class="incl"><span>✓ Creamos su empresa y sus áreas<br>✓ Trasladamos sus archivos actuales<br>✓ Instalamos el programa en sus PC</span></div>
+      <p class="foot">Oferta de lanzamiento para contratos firmados hasta el 31 de enero de 2027.</p>
+    </div>
+  </div>
+</section>
+
+<section id="descargar" style="background:var(--soft)">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">¿Ya es cliente?</p>
+      <h2>Entre a su nube o instale el programa</h2>
+    </div>
+    <div class="dl">
+      <div class="dcard win">
+        <h3>Informac Nube para Windows</h3>
+        <p>Windows 10 y 11, 64 bits. Su carpeta aparece en el Explorador.</p>
+        <ol>
+          <li>Descargue e instale el programa.</li>
+          <li>Ábralo desde el ícono del escritorio e ingrese con su correo y clave.</li>
+          <li>Elija "Archivos virtuales" y listo.</li>
+        </ol>
+        <div><a class="btn btn-red" href="https://github.com/cmarindjprim-design/informac-nube-escritorio/releases/latest/download/InformacNube-Windows-x64.exe">⬇ Descargar para Windows</a></div>
+        <p style="font-size:13.5px">Si Windows muestra "Windows protegió su PC", elija "Más información" y luego "Ejecutar de todas formas".</p>
+      </div>
+      <div class="dcard web">
+        <h3>Desde el navegador o el celular</h3>
+        <p>Desde cualquier computador, Mac o celular, sin instalar nada.</p>
+        <div><a class="btn btn-red" href="https://nube.informac.net/">Ingresar a mi nube</a></div>
+        <p style="font-size:14px">¿Olvidó su clave? En la pantalla de ingreso elija "¿Olvidó su contraseña?" o escriba al administrador de su empresa.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contacto">
+  <div class="wrap">
+    <div style="display:grid;gap:14px">
+      <p class="eyebrow" style="color:var(--coral)">Demo de 15 minutos</p>
+      <h2>Veámoslo funcionando con sus archivos</h2>
+      <p>Le mostramos su carpeta en Windows, cómo se asignan los permisos y cómo se recupera un archivo borrado.</p>
+    </div>
+    <div class="cards">
+      <div class="ccard"><span>+56 9 7656 9525</span><button class="copy" type="button" data-copy="+56 9 7656 9525">Copiar</button></div>
+      <div class="ccard"><span>contacto@informac.cl</span><button class="copy" type="button" data-copy="contacto@informac.cl">Copiar</button></div>
+      <div class="ccard"><span>informac.cl</span><a class="copy" href="https://informac.cl" target="_blank" rel="noopener">Abrir</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="lema">Somos Solución</span>
+    <p class="src">Precios de la competencia: listas públicas de Microsoft 365 (alza de julio de 2026), Google Workspace y Dropbox, consultadas el 27 de octubre de 2026, con dólar observado de $990. Métricas de Informac Nube medidas el 27 de octubre de 2026.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const USD=990;
+  const fmt=n=>'$'+Math.round(n).toLocaleString('es-CL');
+  const PLANS=[
+    {id:'inicio',name:'Inicio',gb:100,users:5,price:14990,who:'Oficinas chicas, contadores, consultas'},
+    {id:'pyme',name:'Pyme',gb:500,users:10,price:29990,who:'La medida justa para la mayoría de las pymes',star:true},
+    {id:'empresa',name:'Empresa',gb:1024,users:20,price:49990,who:'Constructoras, ingeniería, diseño con planos'},
+    {id:'plus',name:'Plus',gb:2048,users:40,price:89990,who:'Empresas medianas o con mucho archivo histórico'}
+  ];
+  const EXTRA=4990;
+
+  // ---------- planes ----------
+  let annual=false;
+  const gbLabel=g=>g>=1024?(g/1024).toLocaleString('es-CL')+' TB':g+' GB';
+  const fits=g=>{const mb=g*1024;return [['fotos de celular',Math.floor(mb/4)],['documentos Word',Math.floor(mb/2)],['planos PDF',Math.floor(mb/25)]];};
+  function renderPlans(){
+    const el=document.getElementById('plans');
+    el.innerHTML='';
+    PLANS.forEach(p=>{
+      const c=document.createElement('article');c.className='plan'+(p.star?' star':'');
+      const monthly=annual?p.price*10/12:p.price;
+      c.innerHTML=(p.star?'<span class="badge">Recomendado</span>':'')+
+        '<h3></h3><div><span class="price num"></span> <small class="muted"></small></div>'+
+        '<div class="specs"><span class="spec"></span><span class="spec"></span></div><p class="muted"></p><ul class="fits"></ul>';
+      c.querySelector('h3').textContent=p.name;
+      c.querySelector('.price').textContent=fmt(monthly);
+      c.querySelector('small').textContent=annual?'al mes, pagando '+fmt(p.price*10)+' al año':'al mes + IVA';
+      const s=c.querySelectorAll('.spec');s[0].textContent=gbLabel(p.gb);s[1].textContent='hasta '+p.users+' usuarios';
+      c.querySelector('p.muted').textContent=p.who;
+      const ul=c.querySelector('.fits');
+      ul.insertAdjacentHTML('beforeend','<li>Caben aprox.:</li>');
+      fits(p.gb).forEach(([k,v])=>{const li=document.createElement('li');li.innerHTML='<b class="num"></b> ';li.querySelector('b').textContent=v.toLocaleString('es-CL');li.append(k);ul.append(li);});
+      el.append(c);
+    });
+  }
+  const pm=document.getElementById('pm'),pa=document.getElementById('pa');
+  pm.onclick=()=>{annual=false;pm.setAttribute('aria-pressed','true');pa.setAttribute('aria-pressed','false');renderPlans();};
+  pa.onclick=()=>{annual=true;pa.setAttribute('aria-pressed','true');pm.setAttribute('aria-pressed','false');renderPlans();};
+  renderPlans();
+
+  // ---------- calculadora ----------
+  const GBSTEPS=[20,50,100,150,200,250,300,350,400,450,500];
+  for(let g=600;g<=1000;g+=100)GBSTEPS.push(g);
+  for(let g=1024;g<=3072;g+=128)GBSTEPS.push(g);
+  const users=document.getElementById('users'),gb=document.getElementById('gb');
+  gb.max=GBSTEPS.length-1; gb.value=GBSTEPS.indexOf(500);
+  let yearly=false;
+  function informac(n,g){
+    let best=null;
+    PLANS.forEach(p=>{
+      const xu=Math.max(0,Math.ceil((n-p.users)/5)), xg=Math.max(0,Math.ceil((g-p.gb)/100));
+      const cost=p.price+(xu+xg)*EXTRA;
+      if(!best||cost<best.cost)best={p,xu,xg,cost};
+    });
+    return best;
+  }
+  function competitors(n,g){
+    const ms={name:'Microsoft 365 Basic',note:'US$7 por persona · 1 TB por persona',cost:n*7*USD};
+    const starterOk=g<=30*n;
+    const gw=starterOk?{name:'Google Workspace Starter',note:'US$7 por persona · 30 GB por persona',cost:n*7*USD}
+                     :{name:'Google Workspace Standard',note:'US$14 por persona · 2 TB por persona',cost:n*14*USD};
+    const seats=Math.max(3,n);
+    const dbx=g<=5120?{name:'Dropbox Standard',note:'US$15 por persona · mínimo 3',cost:seats*15*USD}
+                     :{name:'Dropbox Advanced',note:'US$24 por persona · mínimo 3',cost:seats*24*USD};
+    return [ms,gw,dbx];
+  }
+  function render(){
+    const n=+users.value, g=GBSTEPS[+gb.value];
+    document.getElementById('o-users').textContent=n;
+    document.getElementById('o-gb').textContent=gbLabel(g);
+    const b=informac(n,g);
+    let extra=[];if(b.xu)extra.push('+'+b.xu*5+' usuarios');if(b.xg)extra.push('+'+b.xg*100+' GB');
+    document.getElementById('reco-name').textContent=b.p.name+(extra.length?' + extras':'');
+    document.getElementById('reco-detail').textContent=gbLabel(b.p.gb)+' · hasta '+b.p.users+' usuarios'+(extra.length?' · '+extra.join(' y '):'');
+    const mult=yearly?12:1;
+    const rows=competitors(n,g).map(c=>({...c,cost:c.cost*mult}));
+    const ours={name:'Informac Nube',note:'Plan '+b.p.name+(extra.length?' con extras':'')+' · precio por empresa',cost:yearly?b.p.price*10+(b.xu+b.xg)*EXTRA*12:b.cost,us:true};
+    const all=[...rows,ours];
+    const max=Math.max(...all.map(r=>r.cost));
+    const box=document.getElementById('bars');box.innerHTML='';
+    all.sort((a,c)=>c.cost-a.cost).forEach(r=>{
+      const d=document.createElement('div');d.className='rbar'+(r.us?' us':'');
+      d.innerHTML='<div class="rname"><b></b><small></small></div><div class="rtrack"><i></i></div><span class="rval num"></span>';
+      d.querySelector('b').textContent=r.name;d.querySelector('small').textContent=r.note;
+      d.querySelector('i').style.width=Math.max(3,r.cost/max*100)+'%';
+      d.querySelector('.rval').textContent=fmt(r.cost);
+      box.append(d);
+    });
+    const cheapest=Math.min(...rows.map(r=>r.cost));
+    const cheapName=rows.find(r=>r.cost===cheapest).name;
+    const pct=Math.round((1-ours.cost/cheapest)*100);
+    const pe=document.getElementById('save-pct'),pt=document.getElementById('save-txt');
+    if(pct>0){pe.textContent=pct+'%';pe.style.color='var(--ok)';
+      pt.textContent='menos que '+cheapName+', la opción más barata de las tres. Son '+fmt(cheapest-ours.cost)+(yearly?' al año.':' al mes, '+fmt((cheapest-ours.cost)*12)+' al año.');}
+    else{pe.textContent='—';pe.style.color='var(--muted)';
+      pt.textContent='Con tan pocas personas, '+cheapName+' cuesta lo mismo o menos. Informac Nube conviene desde que el equipo crece, porque el precio no sube por persona.';}
+  }
+  users.oninput=render;gb.oninput=render;
+  const cm=document.getElementById('cm'),ca=document.getElementById('ca');
+  cm.onclick=()=>{yearly=false;cm.setAttribute('aria-pressed','true');ca.setAttribute('aria-pressed','false');render();};
+  ca.onclick=()=>{yearly=true;ca.setAttribute('aria-pressed','true');cm.setAttribute('aria-pressed','false');render();};
+  render();
+
+  // ---------- recorrido ----------
+  const SHOTS={
+    archivos:{img:'cap_archivos.webp',h:320,url:'Archivos · Edificio Los Robles',t:'Archivos por área',p:'Las carpetas de la empresa ordenadas por área y proyecto, con tamaño y fecha de cada archivo.',alt:'Lista de archivos de un proyecto: planilla de cubicación, especificaciones técnicas en PDF y planos.'},
+    permisos:{img:'cap_permisos.webp',h:440,url:'Mi equipo · Permisos',t:'Permisos por persona',p:'El administrador de la cuenta elige, área por área, si cada persona edita, solo ve o no tiene acceso.',alt:'Ventana de permisos de una persona con cinco áreas: Obra y Proyectos en editar, Plantillas en solo ver, el resto sin acceso.',narrow:true},
+    versiones:{img:'cap_versiones.webp',h:380,url:'Archivos · Versiones',t:'Versiones',p:'Cada vez que alguien guarda, queda la versión anterior. Se restaura con un clic.',alt:'Panel de versiones de un PDF con la versión actual y tres versiones anteriores con su fecha y tamaño.'},
+    papelera:{img:'cap_papelera.webp',h:300,url:'Archivos · Archivos eliminados',t:'Papelera',p:'Lo borrado queda al menos 30 días. La persona lo recupera sola; si no, el administrador o Informac.',alt:'Papelera con dos archivos eliminados y el botón Recuperar en cada uno.'},
+    compartir:{img:'cap_compartir.webp',h:500,url:'Archivos · Compartir',t:'Compartir',p:'Dentro del equipo o con un cliente o proveedor externo, por correo o con un enlace.',alt:'Panel para compartir un archivo: con personas internas, con correos externos o creando un enlace público.'},
+    conectar:{img:'cap_conectar.webp',h:450,url:'Conectar mi computador',t:'Conectar el computador',p:'Tres pasos para que la carpeta Informac Nube aparezca en el Explorador de Windows.',alt:'Página con los tres pasos para instalar Informac Nube en Windows.'}
+  };
+  const tabs=[...document.querySelectorAll('.tab')];
+  function show(key){
+    const s=SHOTS[key];
+    tabs.forEach(t=>t.setAttribute('aria-selected',String(t.id==='t-'+key)));
+    const img=document.getElementById('shot-img');
+    img.src='img/'+s.img;img.height=s.h;img.alt=s.alt;
+    document.getElementById('shot').classList.toggle('narrow',!!s.narrow);
+    document.getElementById('shot-url').textContent='nube.informac.net · '+s.url;
+    document.getElementById('cap-t').textContent=s.t;
+    document.getElementById('cap-p').textContent=s.p;
+  }
+  tabs.forEach((t,i)=>{
+    t.onclick=()=>show(t.id.slice(2));
+    t.onkeydown=e=>{if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();const n=tabs[(i+1)%tabs.length];n.focus();n.click();}
+      if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();const n=tabs[(i-1+tabs.length)%tabs.length];n.focus();n.click();}};
+  });
+  show('archivos');
+
+  // ---------- copiar ----------
+  document.querySelectorAll('button.copy').forEach(b=>{
+    b.onclick=async()=>{const v=b.dataset.copy;
+      try{await navigator.clipboard.writeText(v);b.textContent='Copiado';}
+      catch(e){const r=document.createRange();r.selectNodeContents(b.previousElementSibling);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Seleccionado';}
+      setTimeout(()=>b.textContent='Copiar',1800);};
+  });
+})();
+</script>
+<script>
+// ---------- demo: explorador simulado ----------
+(function(){
+  const ICON={cloud:'<span class="st cloud" title="En la nube"><svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.9-9.9A6 6 0 0 1 17.6 8 4.5 4.5 0 0 1 17 18z"/></svg></span>',
+    sync:'<span class="st sync" title="Sincronizando"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.2"/></svg></span>',
+    ok:'<span class="st ok" title="En este computador"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7 12.5l3 3 7-7" stroke="#fff" stroke-width="2.4" fill="none"/></svg></span>'};
+  const TYPE={xlsx:['#1D6F42','X'],docx:['#2B579A','W'],pdf:['#C4122F','PDF'],dwg:['#6B4FA0','CAD']};
+  const AREAS=['Obras','Administración','Plantillas'];
+  const PERM={
+    gerente:{Obras:'edit',Administración:'edit',Plantillas:'edit',txt:'El gerente es administrador: entra a todas las áreas y puede editar todo.'},
+    admin:{Obras:'none',Administración:'edit',Plantillas:'read',txt:'Administración edita su área, solo puede mirar Plantillas y no ve Obras.'},
+    terreno:{Obras:'edit',Administración:'none',Plantillas:'read',txt:'Terreno edita Obras, solo mira Plantillas y no ve Administración.'}
+  };
+  let files=[
+    {id:1,a:'Obras',n:'Cubicación Edificio Los Robles.xlsx',t:'xlsx',s:1.8,st:'cloud',v:[['Hoy 09:12','Karin']]},
+    {id:2,a:'Obras',n:'Plano estructural piso 3.dwg',t:'dwg',s:48,st:'cloud',v:[['Ayer 17:40','Javiera']]},
+    {id:3,a:'Obras',n:'Especificaciones técnicas.pdf',t:'pdf',s:6.2,st:'ok',v:[['Lunes 11:05','Eliana']]},
+    {id:4,a:'Administración',n:'Remuneraciones noviembre.xlsx',t:'xlsx',s:0.9,st:'cloud',v:[['Hoy 08:30','Valentina']]},
+    {id:5,a:'Administración',n:'Contrato proveedor.docx',t:'docx',s:0.4,st:'cloud',v:[['3 nov 16:20','Valentina']]},
+    {id:6,a:'Plantillas',n:'Formato informe de obra.docx',t:'docx',s:0.3,st:'ok',v:[['1 oct 10:00','Gerente']]},
+    {id:7,a:'Plantillas',n:'Presupuesto tipo.xlsx',t:'xlsx',s:0.5,st:'cloud',v:[['1 oct 10:05','Gerente']]}
+  ];
+  let trash=[], who='gerente', area='Obras', sel=null, view='area';
+  const $=id=>document.getElementById(id);
+  const say=h=>{$('d-narr').innerHTML=h;};
+  const lvl=a=>PERM[who][a];
+  const mb=s=>s>=1?s.toLocaleString('es-CL')+' MB':Math.round(s*1024)+' KB';
+  const NAME={gerente:'Gerente',admin:'Administración',terreno:'Terreno'};
+
+  function renderAreas(){
+    const box=$('d-areas');box.innerHTML='';
+    AREAS.forEach(a=>{
+      if(lvl(a)==='none')return;
+      const s=document.createElement('span');s.className='it sub'+(view==='area'&&a===area?' sel':'');s.style.paddingLeft='42px';s.style.cursor='pointer';
+      s.textContent='📁 '+a+(lvl(a)==='read'?' (solo ver)':'');
+      s.onclick=()=>{area=a;view='area';sel=null;render();say('Abrió el área <b>'+a+'</b>. '+(lvl(a)==='read'?'Aquí <b>solo puede mirar</b>: abrir sí, guardar cambios o borrar no.':'Aquí puede abrir, editar y borrar.'));};
+      box.append(s);
+    });
+  }
+  function row(f,inTrash){
+    const d=document.createElement('div');d.className='lrow'+(sel&&sel.id===f.id?' sel':'');d.setAttribute('role','option');d.tabIndex=0;
+    const [c,l]=TYPE[f.t];
+    d.innerHTML='<span class="ficon" style="background:'+c+'">'+l+'</span><span class="nm"></span><span>'+(inTrash?'':ICON[f.st])+'</span><span class="when"></span>';
+    d.querySelector('.nm').textContent=f.n;
+    d.querySelector('.when').textContent=inTrash?('de '+f.a):mb(f.s);
+    const pick=()=>{sel=f;render();
+      if(inTrash)say('<b>'+f.n+'</b> está en la papelera. Apriete <b>Recuperar</b> y vuelve a su carpeta, con sus versiones.');
+      else if(f.st==='cloud')say('<b>'+f.n+'</b> está en la nube: se ve en la carpeta pero no ocupa espacio en este PC. Apriete <b>Abrir</b> y se descarga solo.');
+      else say('<b>'+f.n+'</b> ya está en este computador (check verde). Si alguien lo cambia, se actualiza solo.');};
+    d.onclick=pick;d.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}};
+    return d;
+  }
+  function render(){
+    renderAreas();
+    if(view!=='area'||lvl(area)==='none'){const first=AREAS.find(a=>lvl(a)!=='none');if(view==='area')area=first;}
+    const list=$('d-list');list.innerHTML='';
+    const head=document.createElement('div');head.className='lrow head';head.innerHTML='<span></span><span>Nombre</span><span>Estado</span><span class="when">'+(view==='trash'?'Origen':'Tamaño')+'</span>';list.append(head);
+    let items;
+    if(view==='trash'){
+      items=trash.filter(f=>lvl(f.a)!=='none');
+      $('d-path').textContent='Informac Nube › Papelera';
+      if(!items.length){const e=document.createElement('div');e.className='empty';e.textContent='La papelera está vacía.';list.append(e);}
+      items.forEach(f=>list.append(row(f,true)));
+    }else{
+      items=files.filter(f=>f.a===area);
+      $('d-path').textContent='Informac Nube › Constructora Andes › '+area;
+      items.forEach(f=>list.append(row(f,false)));
+    }
+    $('d-count').textContent=items.length+' elementos';
+    const tv=trash.filter(f=>lvl(f.a)!=='none').length;$('d-tc').textContent=tv?'('+tv+')':'';
+    const inArea=view==='area'&&sel&&files.includes(sel), can=inArea&&lvl(sel.a)==='edit';
+    $('d-open').disabled=!(inArea);
+    $('d-open').innerHTML=view==='trash'?'↩ Recuperar':'📂 Abrir';
+    if(view==='trash')$('d-open').disabled=!(sel&&trash.includes(sel)&&lvl(sel.a)==='edit');
+    $('d-save').disabled=!can;$('d-del').disabled=!can;$('d-vers').disabled=!inArea;
+    if(!inArea)$('d-vbox').hidden=true;
+    document.querySelectorAll('[data-who]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.who===who)));
+    $('d-who-txt').textContent=PERM[who].txt;
+  }
+  function syncing(f,msg,done){
+    f.st='sync';$('d-sync').textContent='⟳ Sincronizando…';render();say(msg);
+    setTimeout(()=>{f.st='ok';$('d-sync').textContent='✔ Todo al día';render();done&&done();},1400);
+  }
+  $('d-open').onclick=()=>{
+    if(view==='trash'){const f=sel;trash=trash.filter(x=>x!==f);files.push(f);view='area';area=f.a;sel=f;render();
+      say('Listo: <b>'+f.n+'</b> volvió a <b>'+f.a+'</b>. Los archivos borrados quedan 30 días en la papelera; después, el administrador o Informac todavía pueden recuperarlos del respaldo.');return;}
+    const f=sel;
+    if(f.st==='ok'){say('<b>'+f.n+'</b> se abre al instante: ya estaba en este computador.');return;}
+    syncing(f,'Descargando <b>'+f.n+'</b> ('+mb(f.s)+') desde la nube…',()=>say('<b>'+f.n+'</b> se abrió y ahora tiene <b>check verde</b>: queda guardado en este PC para la próxima vez.'));
+  };
+  $('d-save').onclick=()=>{const f=sel;const now=new Date();const h=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+    f.v.unshift(['Hoy '+h,NAME[who]]);f.s=Math.round((f.s*1.03)*10)/10;
+    syncing(f,'Guardó un cambio en <b>'+f.n+'</b>. Se está subiendo a la nube…',()=>{say('Subido. El resto del equipo ya ve la versión nueva, y <b>la anterior quedó guardada</b>. Apriete <b>Ver versiones</b>.');if(!$('d-vbox').hidden)showV();});};
+  function showV(){const f=sel;$('d-vbox').hidden=false;$('d-vtitle').textContent='Versiones de '+f.n;const l=$('d-vlist');l.innerHTML='';
+    f.v.forEach((v,i)=>{const r=document.createElement('div');r.className='vrow';r.innerHTML='<span><b></b> · <span class="muted"></span></span>';r.querySelector('b').textContent=i?v[0]:v[0]+' (actual)';r.querySelector('.muted').textContent=v[1];
+      if(i&&lvl(f.a)==='edit'){const b=document.createElement('button');b.textContent='Restaurar';b.onclick=()=>{const [x]=f.v.splice(i,1);f.v.unshift([x[0]+' · restaurada',NAME[who]]);showV();say('Restauró la versión de <b>'+x[0]+'</b>. La que estaba antes también quedó guardada: no se pierde nada.');};r.append(b);}
+      l.append(r);});}
+  $('d-vers').onclick=()=>{showV();say('Cada vez que alguien guarda, queda la versión anterior por <b>90 días</b>. Se vuelve atrás con un clic.');};
+  $('d-del').onclick=()=>{const f=sel;files=files.filter(x=>x!==f);trash.unshift(f);sel=null;render();
+    say('Borró <b>'+f.n+'</b>. No se perdió: está en la <b>Papelera</b>. Ábrala y apriete <b>Recuperar</b>.');};
+  $('d-trash').onclick=()=>{view=view==='trash'?'area':'trash';sel=null;render();
+    say(view==='trash'?'Esta es la papelera de la empresa. Elija un archivo y apriete <b>Recuperar</b>.':'Volvió a la carpeta <b>'+area+'</b>.');};
+  document.querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>{who=b.dataset.who;sel=null;view='area';
+    if(lvl(area)==='none')area=AREAS.find(a=>lvl(a)!=='none');render();
+    say('Ahora ve la carpeta como <b>'+NAME[who]+'</b>. '+PERM[who].txt+' Las áreas sin permiso <b>ni siquiera aparecen</b>.');});
+  render();
+})();
+</script>
+</body>
+</html>
