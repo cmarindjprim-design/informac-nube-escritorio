@@ -282,6 +282,58 @@ footer{background:#071322;color:#7F93A8;font-size:14px;padding:28px 0}
 footer .w{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer em{font-family:Georgia,serif;color:#FF6B74}
 
+
+/* ===== dinámica extra ===== */
+.toast{position:absolute;z-index:4;display:flex;align-items:center;gap:10px;background:#fff;color:var(--ink);font-size:13.5px;font-weight:600;padding:10px 14px;border-radius:12px;box-shadow:0 0 0 1px rgba(14,27,43,.06),0 18px 34px -14px rgba(14,27,43,.45);opacity:0;transform:translateY(10px) scale(.97);transition:opacity .45s,transform .45s}
+.toast.on{opacity:1;transform:none}
+.toast .ti{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex:none}
+.toast .ti svg{width:16px;height:16px;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.toast small{display:block;font-weight:500;color:var(--quiet);font-size:12px}
+.chip.dk{animation:bob 6s ease-in-out infinite;opacity:1}
+.laptop .scr{overflow:hidden}
+.laptop .scr img{transform-origin:20% 30%;animation:pan 14s ease-in-out infinite alternate}
+@keyframes pan{0%,10%{transform:scale(1)}90%,100%{transform:scale(1.12)}}
+.lap-wrap{position:relative}
+.tb{position:relative;overflow:hidden}
+.tb .pg{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--red)}
+.tb[aria-selected="true"] .pg{animation:pg var(--dur,6s) linear forwards}
+.tabs.paused .tb[aria-selected="true"] .pg{animation-play-state:paused}
+@keyframes pg{to{width:100%}}
+.tv{position:relative}
+.tv .zoom{overflow:hidden}
+.tv .zoom img{animation:kb 7s ease-out both}
+@keyframes kb{from{transform:scale(1.06)}to{transform:scale(1)}}
+.tvchip{position:absolute;right:18px;bottom:18px;z-index:2}
+.acc .vis{border-radius:14px;overflow:hidden;margin:-4px 0 6px}
+.inst{background:#0B1C31;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;display:grid;gap:12px;font-size:14px}
+.inst .s{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;color:#7F93A8;transition:color .3s}
+.inst .s .ic{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.06);display:grid;place-items:center}
+.inst .s .ic svg{width:15px;height:15px;stroke:#7F93A8;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+.inst .s.act{color:#fff}.inst .s.act .ic{background:rgba(227,30,45,.18)}.inst .s.act .ic svg{stroke:#FF6B74}
+.inst .s.done{color:#C8D5E3}.inst .s.done .ic{background:rgba(31,138,76,.2)}.inst .s.done .ic svg{stroke:#5FD08E}
+.inst .s .st2{font-size:12px;font-weight:600}
+.inst .bar2{grid-column:2/4;height:4px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:-6px}
+.inst .bar2 i{display:block;height:100%;width:0;background:var(--red);border-radius:4px}
+.phonewrap{display:flex;justify-content:center;background:linear-gradient(160deg,#EAF1F9,#F7F9FC);border-radius:14px;padding:22px 0 0;position:relative;overflow:hidden;height:236px}
+.phone{width:170px;height:300px;border-radius:26px;background:#0E1B2B;padding:8px;box-shadow:0 20px 40px -18px rgba(14,27,43,.5)}
+.phone .sc{background:#fff;border-radius:19px;height:100%;overflow:hidden;position:relative;font-size:10.5px;color:var(--ink)}
+.phone .pv{position:absolute;inset:0;padding:14px 12px;transition:opacity .5s,transform .5s}
+.phone .pv.off{opacity:0;transform:translateX(20px);pointer-events:none}
+.phone .lg{display:flex;align-items:center;gap:6px;font-weight:800;font-size:12px;margin:6px 0 14px}
+.phone .lg svg{width:22px;height:18px}
+.phone .fld{height:24px;border:1px solid var(--line);border-radius:6px;margin-bottom:7px;padding:0 8px;display:flex;align-items:center;color:var(--quiet)}
+.phone .pbtn{height:26px;border-radius:6px;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:700}
+.phone .fr{display:grid;grid-template-columns:16px 1fr 12px;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid #F0F2F5}
+.phone .fr i{width:16px;height:16px;border-radius:3px;display:block}
+.phone .fr span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cur{position:absolute;z-index:6;width:22px;height:22px;pointer-events:none;transition:left .7s cubic-bezier(.4,0,.2,1),top .7s cubic-bezier(.4,0,.2,1),opacity .3s;opacity:0}
+.cur svg{width:22px;height:22px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.cur.clk::after{content:"";position:absolute;left:-8px;top:-8px;width:22px;height:22px;border-radius:50%;border:2px solid var(--red);animation:ping .5s ease-out forwards}
+@keyframes ping{from{opacity:1;transform:scale(.4)}to{opacity:0;transform:scale(1.6)}}
+.auto-note{position:absolute;left:16px;top:-14px;z-index:5;background:var(--red);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;opacity:0;transition:opacity .3s}
+.auto-note.on{opacity:1}
+@media (max-width:760px){.tvchip,.toast.side2{display:none}}
+
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1)}
 .rv.on{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}.rv,.hero .in,.icons div,.float{opacity:1!important;transform:none!important}}
@@ -365,7 +417,7 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
       <p class="lead center">Es el Explorador de Windows de siempre. Haga clic en un archivo, ábralo, guarde un cambio, bórrelo y recupérelo, o cambie de persona para ver los permisos.</p>
     </div>
     <div class="rv">
-<div class="stage" id="demo">
+<div class="stage" id="demo"><span class="auto-note" id="autonote">Demostración automática · haga clic para tomar el control</span><div class="cur" id="cur"><svg viewBox="0 0 24 24"><path d="M4 2l16 9-7 2-3 7z" fill="#fff" stroke="#0E1B2B" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
       <div class="win" role="region" aria-label="Demostración interactiva del Explorador de Windows con Informac Nube">
         <div class="wbar">
           <div class="tab"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#F4B942"/></svg><span id="tabname">Obras</span></div>
@@ -409,7 +461,7 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
 
 <section>
   <div class="w res">
-    <div class="laptop rv"><div class="scr"><img src="img/cap_equipo.webp" width="1568" height="741" alt="Panel de la empresa en Informac Nube: integrantes y áreas a las que accede cada uno." loading="lazy"></div><div class="base"></div></div>
+    <div class="lap-wrap rv"><div class="toast" id="lt1" style="right:-18px;top:-26px"><span class="ti" id="lt1i" style="background:#E8F6EE"><svg viewBox="0 0 24 24" stroke="#1F8A4C"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span id="lt1t"></span></div><span class="chip dk" style="left:-14px;bottom:44px;position:absolute"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>$0 por cada persona nueva</span><div class="laptop"><div class="scr"><img src="img/cap_equipo.webp" width="1568" height="741" alt="Panel de la empresa en Informac Nube: integrantes y áreas a las que accede cada uno." loading="lazy"></div><div class="base"></div></div></div>
     <div class="rv">
       <p class="kicker">Lo que gana su empresa</p>
       <h2 style="margin-top:16px">Tecnología que se nota en el día a día</h2>
@@ -430,13 +482,13 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
     </div>
     <div class="tabs rv">
       <div class="tl" role="tablist" aria-label="Funciones">
-        <button class="tb" role="tab" aria-selected="true" data-i="0"><b>Su equipo y sus permisos</b><span>Integrantes, áreas y quién edita o solo mira.</span></button>
-        <button class="tb" role="tab" aria-selected="false" data-i="1"><b>Versiones</b><span>Vuelva a cualquier versión anterior con un clic.</span></button>
-        <button class="tb" role="tab" aria-selected="false" data-i="2"><b>Papelera</b><span>Lo borrado se recupera durante 30 días.</span></button>
-        <button class="tb" role="tab" aria-selected="false" data-i="3"><b>Compartir con externos</b><span>Enlaces con clave y fecha de vencimiento.</span></button>
-        <button class="tb" role="tab" aria-selected="false" data-i="4"><b>Conectar el computador</b><span>Tres pasos y la carpeta aparece en Windows.</span></button>
+        <button class="tb" role="tab" aria-selected="true" data-i="0"><b>Su equipo y sus permisos</b><span>Integrantes, áreas y quién edita o solo mira.</span><i class="pg"></i></button>
+        <button class="tb" role="tab" aria-selected="false" data-i="1"><b>Versiones</b><span>Vuelva a cualquier versión anterior con un clic.</span><i class="pg"></i></button>
+        <button class="tb" role="tab" aria-selected="false" data-i="2"><b>Papelera</b><span>Lo borrado se recupera durante 30 días.</span><i class="pg"></i></button>
+        <button class="tb" role="tab" aria-selected="false" data-i="3"><b>Compartir con externos</b><span>Enlaces con clave y fecha de vencimiento.</span><i class="pg"></i></button>
+        <button class="tb" role="tab" aria-selected="false" data-i="4"><b>Conectar el computador</b><span>Tres pasos y la carpeta aparece en Windows.</span><i class="pg"></i></button>
       </div>
-      <figure class="tv" role="tabpanel" style="margin:0"><div class="bar"><i></i><i></i><i></i><span id="tvurl">nube.informac.net</span></div><img id="tvimg" src="img/cap_permisos.webp" alt="" loading="lazy"></figure>
+      <figure class="tv" role="tabpanel" style="margin:0"><div class="bar"><i></i><i></i><i></i><span id="tvurl">nube.informac.net</span></div><div class="zoom"><img id="tvimg" src="img/cap_permisos.webp" alt="" loading="lazy"></div><div class="toast tvchip on" id="tvchip"><span class="ti" style="background:#FDECEE"><svg viewBox="0 0 24 24" stroke="#E31E2D"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span id="tvchipt">Permisos guardados<small>Ana Rojas · 5 áreas</small></span></div></figure>
     </div>
   </div>
 </section>
@@ -482,12 +534,23 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
     <div class="head rv"><p class="kicker">Clientes</p><h2>¿Ya trabaja con Informac Nube?</h2></div>
     <div class="acc-grid rv">
       <div class="acc d">
+        <div class="vis inst" id="inst" aria-hidden="true">
+          <div class="s" data-k="0"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></span><span>Descargando Informac Nube</span><span class="st2">51 MB</span><div class="bar2"><i></i></div></div>
+          <div class="s" data-k="1"><span class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8"/></svg></span><span>Instalando</span><span class="st2"></span><div class="bar2"><i></i></div></div>
+          <div class="s" data-k="2"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg></span><span>Ícono en el escritorio</span><span class="st2"></span></div>
+          <div class="s" data-k="3"><span class="ic"><svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.9-9.9A6 6 0 0 1 17.6 8 4.5 4.5 0 0 1 17 18z"/></svg></span><span>"Informac Nube" en el Explorador</span><span class="st2"></span></div>
+        </div>
         <h3>Programa para Windows</h3>
         <ol><li>Descárguelo e instálelo.</li><li>Ábralo desde el ícono "Informac Nube" del escritorio.</li><li>Ingrese con su correo y clave, y elija "Archivos virtuales".</li></ol>
         <div><a class="btn red" href="https://github.com/cmarindjprim-design/informac-nube-escritorio/releases/latest/download/InformacNube-Windows-x64.exe"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Descargar para Windows</a></div>
         <p class="fine">Windows 10 y 11. Si aparece "Windows protegió su PC", elija "Más información" y luego "Ejecutar de todas formas".</p>
       </div>
       <div class="acc">
+        <div class="vis phonewrap" aria-hidden="true"><div class="phone"><div class="sc">
+          <div class="pv" id="pv1"><div class="lg"><svg viewBox="0 0 56 44"><path fill="#E31E2D" d="M15 40a13 13 0 0 1-1.6-25.9A17 17 0 0 1 46 14.6 12.8 12.8 0 0 1 43.5 40z"/></svg>informac nube</div><div class="fld" id="pmail"></div><div class="fld" id="ppass"></div><div class="pbtn">Ingresar</div></div>
+          <div class="pv off" id="pv2"><div class="lg"><svg viewBox="0 0 56 44"><path fill="#E31E2D" d="M15 40a13 13 0 0 1-1.6-25.9A17 17 0 0 1 46 14.6 12.8 12.8 0 0 1 43.5 40z"/></svg>Obras</div>
+            <div class="fr"><i style="background:#1D6F42"></i><span>Cubicación.xlsx</span>✓</div><div class="fr"><i style="background:#C8102E"></i><span>Especificaciones.pdf</span>✓</div><div class="fr"><i style="background:#5B4A9E"></i><span>Plano piso 3.dwg</span>✓</div><div class="fr"><i style="background:#2B579A"></i><span>Informe avance.docx</span>✓</div><div class="fr"><i style="background:#1D6F42"></i><span>Presupuesto.xlsx</span>✓</div></div>
+        </div></div></div>
         <h3>Navegador o celular</h3>
         <p>Desde cualquier computador, Mac o celular, sin instalar nada.</p>
         <div><a class="btn out" href="https://nube.informac.net/">Ingresar a mi nube</a></div>
@@ -640,6 +703,79 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
   function sel(n){tbs.forEach((t,j)=>t.setAttribute('aria-selected',String(j===n)));img.style.opacity=0;setTimeout(()=>{img.src='img/'+TV[n][0];img.alt=TV[n][2];document.getElementById('tvurl').textContent='nube.informac.net · '+TV[n][1];img.style.opacity=1;},180);}
   tbs.forEach((t,j)=>{t.onclick=()=>sel(j);t.onkeydown=e=>{if(e.key==='ArrowDown'){e.preventDefault();tbs[(j+1)%tbs.length].focus();sel((j+1)%tbs.length);}if(e.key==='ArrowUp'){e.preventDefault();const p=(j-1+tbs.length)%tbs.length;tbs[p].focus();sel(p);}};});
   img.alt=TV[0][2];
+})();
+</script>
+<script>(()=>{
+  const RED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const seen=(el,cb,th=.35)=>{const io=new IntersectionObserver(es=>es.forEach(e=>cb(e.isIntersecting)),{threshold:th});io.observe(el);};
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+  // --- funciones: pestañas automáticas con barra de avance y etiqueta ---
+  const tabsBox=document.querySelector('.tabs'),tbs=[...document.querySelectorAll('.tb')],img=document.getElementById('tvimg');
+  const CH=[['Permisos guardados','Ana Rojas · 5 áreas'],['Versión restaurada','Presupuesto.xlsx · ayer 17:40'],['Archivo recuperado','Volvió a su carpeta'],['Enlace creado','Con clave · vence en 7 días'],['Carpeta conectada','Aparece en el Explorador']];
+  let ti=0,timer=null,visT=false,hover=false;const DUR=6000;
+  function show(i){ti=i;const c=document.getElementById('tvchip');c.classList.remove('on');
+    setTimeout(()=>{document.getElementById('tvchipt').innerHTML=CH[i][0]+'<small>'+CH[i][1]+'</small>';c.classList.add('on');},500);
+    img.style.animation='none';void img.offsetWidth;img.style.animation='';
+    tbs.forEach(t=>{const p=t.querySelector('.pg');p.style.animation='none';void p.offsetWidth;p.style.animation='';});}
+  tbs.forEach((t,i)=>{t.style.setProperty('--dur',DUR+'ms');t.addEventListener('click',()=>{show(i);restart();});});
+  function restart(){clearInterval(timer);if(RED||!visT)return;timer=setInterval(()=>{if(hover)return;tbs[(ti+1)%tbs.length].click();},DUR);}
+  tabsBox.addEventListener('mouseenter',()=>{hover=true;tabsBox.classList.add('paused');});
+  tabsBox.addEventListener('mouseleave',()=>{hover=false;tabsBox.classList.remove('paused');});
+  seen(tabsBox,v=>{visT=v;restart();});
+
+  // --- notebook: notificaciones que van apareciendo ---
+  const LT=[['Karin agregada a Obras','Puede editar','#E8F6EE','#1F8A4C','M5 12.5l4.5 4.5L19 7.5'],['Permiso cambiado','Javiera · Biblioteca: solo ver','#EAF2FD','#3B8BEB','M4 12h16M12 4v16'],['Archivo recuperado','Contrato.pdf volvió a Comercial','#FDECEE','#E31E2D','M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5'],['Respaldo completado','Hoy 03:30 · sin errores','#E8F6EE','#1F8A4C','M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z']];
+  const lt=document.getElementById('lt1');let li=0,lr=null;
+  function toast(){const d=LT[li%LT.length];li++;lt.classList.remove('on');
+    setTimeout(()=>{document.getElementById('lt1t').innerHTML=d[0]+'<small>'+d[1]+'</small>';const ic=document.getElementById('lt1i');ic.style.background=d[2];ic.innerHTML='<svg viewBox="0 0 24 24" stroke="'+d[3]+'"><path d="'+d[4]+'"/></svg>';lt.classList.add('on');},450);}
+  seen(lt.parentElement,v=>{clearInterval(lr);if(v){toast();if(!RED)lr=setInterval(toast,3200);}});
+
+  // --- instalador animado ---
+  const inst=document.getElementById('inst'),steps=[...inst.querySelectorAll('.s')];let ir=false;
+  async function runInst(){if(ir)return;ir=true;
+    while(ir){steps.forEach(s=>{s.className='s';const b=s.querySelector('.bar2 i');if(b){b.style.transition='none';b.style.width='0';}s.querySelector('.st2').textContent=s.dataset.k==='0'?'51 MB':'';});
+      for(const s of steps){if(!ir)return;s.classList.add('act');const b=s.querySelector('.bar2 i');
+        if(b){await wait(50);b.style.transition='width 1.6s ease';b.style.width='100%';await wait(1700);}else await wait(800);
+        s.classList.remove('act');s.classList.add('done');s.querySelector('.st2').textContent='Listo';}
+      await wait(2600);}}
+  if(RED){steps.forEach(s=>{s.classList.add('done');s.querySelector('.st2').textContent='Listo';});}
+  else seen(inst,v=>{if(v)runInst();else ir=false;});
+
+  // --- celular: ingreso y lista ---
+  const pv1=document.getElementById('pv1'),pv2=document.getElementById('pv2'),pm=document.getElementById('pmail'),pp=document.getElementById('ppass');let pr=false;
+  async function runPhone(){if(pr)return;pr=true;
+    while(pr){pv1.classList.remove('off');pv2.classList.add('off');pm.textContent='';pp.textContent='';await wait(700);
+      for(const ch of 'karin@empresa.cl'){if(!pr)return;pm.textContent+=ch;await wait(60);}
+      for(let i=0;i<8;i++){pp.textContent+='•';await wait(70);}
+      await wait(600);pv1.classList.add('off');pv2.classList.remove('off');await wait(3200);}}
+  if(RED){pv1.classList.add('off');pv2.classList.remove('off');}else seen(pv1.closest('.phonewrap'),v=>{if(v)runPhone();else pr=false;});
+
+  // --- demostración automática con cursor ---
+  const stage=document.getElementById('demo'),cur=document.getElementById('cur'),note=document.getElementById('autonote');
+  let auto=!RED,running=false;
+  const stopAuto=e=>{if(e.isTrusted&&auto){auto=false;cur.style.opacity=0;note.classList.remove('on');}};
+  stage.addEventListener('pointerdown',stopAuto,true);stage.addEventListener('keydown',stopAuto,true);
+  async function go(sel,pick){if(!auto)throw 0;const el=typeof sel==='string'?stage.querySelector(sel):sel();if(!el)return;
+    const a=stage.getBoundingClientRect(),b=el.getBoundingClientRect();
+    cur.style.left=(b.left-a.left+Math.min(40,b.width/2))+'px';cur.style.top=(b.top-a.top+b.height/2)+'px';await wait(800);if(!auto)throw 0;
+    cur.classList.remove('clk');void cur.offsetWidth;cur.classList.add('clk');(pick||el).click();await wait(250);}
+  async function play(){if(running)return;running=true;cur.style.opacity=1;note.classList.add('on');
+    try{while(auto){
+      await go('[data-who="gerente"]');await wait(1200);
+      await go(()=>stage.querySelectorAll('.files .row:not(.h)')[1]);await wait(1400);
+      await go('#b-open');await wait(2600);
+      await go('#b-save');await wait(2600);
+      await go('#b-vers');await wait(2600);
+      await go('#vclose');await wait(600);
+      await go('#b-del');await wait(2200);
+      await go('#b-trash');await wait(1400);
+      await go(()=>stage.querySelector('.files .row:not(.h)'));await wait(1200);
+      await go('#b-open');await wait(2600);
+      await go('[data-who="admin"]');await wait(3200);
+      await go('[data-who="terreno"]');await wait(3200);
+    }}catch(e){}running=false;}
+  seen(stage,v=>{if(v&&auto)play();},.5);
 })();
 </script>
 </body>
