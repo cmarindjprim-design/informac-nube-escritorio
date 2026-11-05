@@ -57,8 +57,8 @@ p{margin:0}
 
 /* hero */
 .hero{position:relative;background:var(--night);color:#D5E0EC;overflow:hidden;padding-top:84px}
-.hero .photo{position:absolute;inset:0 0 0 38%;background:url(img/hero.webp) center/cover no-repeat}
-.hero .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--night) 0%,rgba(10,26,47,.85) 22%,rgba(10,26,47,.15) 55%,rgba(10,26,47,.25) 100%),linear-gradient(0deg,var(--night) 0%,transparent 30%)}
+.hero .photo{position:absolute;inset:0 0 0 30%;background:url(img/fondo.webp) 70% 40%/cover no-repeat}
+.hero .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--night) 0%,rgba(10,26,47,.85) 22%,rgba(10,26,47,.25) 55%,rgba(10,26,47,.35) 100%),linear-gradient(0deg,var(--night) 0%,transparent 30%)}
 .hero .glow{position:absolute;left:-200px;top:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(59,139,235,.18),transparent 60%);pointer-events:none}
 .hero .w{position:relative;z-index:1}
 .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;min-height:620px;padding:56px 0 40px}
@@ -67,7 +67,16 @@ p{margin:0}
 .hero h1 span{color:var(--red)}
 .hero .lead{color:#C8D5E3;margin-top:22px}
 .hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
-.float{justify-self:end;align-self:end;width:min(420px,100%);margin-bottom:10px;background:rgba(255,255,255,.96);border-radius:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);overflow:hidden;font-family:"Segoe UI",var(--f);font-size:13px;color:#1b1b1b;transform:translateY(20px);opacity:0;animation:rise .9s .6s cubic-bezier(.2,.8,.2,1) forwards}
+.scene{position:relative;justify-self:end;width:min(470px,100%);display:grid;gap:26px;justify-items:center}
+.sign{display:flex;align-items:center;gap:16px;opacity:0;animation:rise 1s .3s forwards}
+.sign svg{width:96px;height:76px;filter:drop-shadow(0 0 22px rgba(255,60,70,.55))}
+.sign span{font-size:44px;line-height:1;letter-spacing:-.02em;color:#E8EFF7;text-shadow:0 0 24px rgba(160,200,255,.45)}
+.sign b{color:#fff;font-weight:800}
+.chip{position:absolute;z-index:3;display:flex;align-items:center;gap:8px;background:rgba(15,39,68,.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:13.5px;font-weight:600;padding:9px 14px;border-radius:999px;box-shadow:0 14px 30px -12px rgba(0,0,0,.6);opacity:0;animation:rise .7s forwards,bob 6s ease-in-out infinite}
+.chip svg{width:16px;height:16px;fill:none;stroke:#FF5A64;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -8px}}
+@media (max-width:900px){.chip{display:none}.scene{justify-self:start}.sign span{font-size:32px}.sign svg{width:70px;height:56px}}
+.float{width:100%;background:rgba(255,255,255,.96);border-radius:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);overflow:hidden;font-family:"Segoe UI",var(--f);font-size:13px;color:#1b1b1b;transform:translateY(20px);opacity:0;animation:rise .9s .6s cubic-bezier(.2,.8,.2,1) forwards}
 .float .t{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#F2F4F7;border-bottom:1px solid #E5E8EC;font-weight:600}
 .float .t svg{width:16px;height:16px}
 .float .t em{margin-left:auto;font-style:normal;font-weight:500;color:#6A7A8C;font-size:12px}
@@ -298,7 +307,7 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
 
 <main>
 <section class="hero" style="padding-bottom:0">
-  <div class="photo" role="img" aria-label="Profesional de Informac en el centro de datos"></div>
+  <div class="photo" role="img" aria-label="Oficina y centro de datos de Informac"></div>
   <div class="glow"></div>
   <div class="w">
     <div class="hero-grid">
@@ -311,9 +320,16 @@ footer em{font-family:Georgia,serif;color:#FF6B74}
           <a class="btn ghost" href="#como"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg>Ver cómo funciona</a>
         </div>
       </div>
-      <div class="float" aria-hidden="true">
+      <div class="scene" aria-hidden="true">
+        <div class="sign"><svg viewBox="0 0 56 44"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF4B55"/><stop offset="1" stop-color="#C8101F"/></linearGradient></defs><path fill="url(#lg2)" d="M15 40a13 13 0 0 1-1.6-25.9A17 17 0 0 1 46 14.6 12.8 12.8 0 0 1 43.5 40z"/><path fill="#fff" d="M18 21.5a2 2 0 0 1 2-2h6l2.2 2.5H38a2 2 0 0 1 2 2V32a2 2 0 0 1-2 2H20a2 2 0 0 1-2-2z"/><path d="M24.5 28.5l3 3 6-6" fill="none" stroke="#E31E2D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>informac <b>nube</b></span></div>
+        <span class="chip" style="left:-150px;top:180px;animation-delay:1.2s,1.2s"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Permisos por área</span>
+        <span class="chip" style="right:-36px;top:96px;animation-delay:1.5s,2s"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Versiones 90 días</span>
+        <span class="chip" style="left:-120px;bottom:30px;animation-delay:1.8s,3s"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Respaldo cada noche</span>
+        <span class="chip" style="right:-28px;bottom:-22px;animation-delay:2.1s,1s"><svg viewBox="0 0 24 24"><path d="M4 7h16M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Papelera 30 días</span>
+      <div class="float">
         <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="#E31E2D" stroke-width="2"><path d="M7 18a5 5 0 0 1-.9-9.9A6 6 0 0 1 17.6 8 4.5 4.5 0 0 1 17 18z"/></svg>Informac Nube › Proyectos<em id="fsync">Sincronizando…</em></div>
         <div id="flist"></div>
+      </div>
       </div>
     </div>
     <div class="icons">
