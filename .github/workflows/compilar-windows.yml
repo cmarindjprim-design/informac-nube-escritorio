@@ -10,6 +10,10 @@ on:
         description: "Versión oficial de Nextcloud Desktop (vacío = la última estable)"
         required: false
         default: ""
+      cliente:
+        description: "Variante para un cliente (vacío = Informac Nube general; ej.: sigma)"
+        required: false
+        default: ""
   schedule:
     - cron: "17 9 * * 1"
 
@@ -25,9 +29,25 @@ jobs:
       CRAFT_MASTER_LOCATION: ${{ github.workspace }}\CraftMaster
       CRAFT_MASTER_CONFIG: ${{ github.workspace }}\src\craftmaster.ini
       SERVER_URL: https://nube.informac.net
+      CLIENTE: ${{ github.event.inputs.cliente }}
     steps:
       - name: Descargar este proyecto (marca)
         uses: actions/checkout@v4
+
+      - name: Logo del cliente (solo variantes)
+        if: env.CLIENTE != ''
+        shell: pwsh
+        run: |
+          python -m pip install --quiet pillow
+          python branding\variante_cliente.py $env:CLIENTE
+          if ($LASTEXITCODE -ne 0) { throw "No se pudo aplicar el logo del cliente" }
+
+      - name: Guardar vista previa del logo (solo variantes)
+        if: env.CLIENTE != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: logo-${{ github.event.inputs.cliente }}
+          path: branding/logo.png
 
       - name: Elegir versión de Nextcloud Desktop
         id: ver
@@ -99,7 +119,9 @@ jobs:
           craft --src-dir "${{ github.workspace }}\src" --package nextcloud-client
           New-Item -ItemType Directory -Force salida | Out-Null
           Get-ChildItem -Recurse -Path "${{ github.workspace }}\${{ env.CRAFT_TARGET }}\tmp" -Include *.exe,*.msi | Where-Object { $_.Length -gt 10MB } | ForEach-Object { Copy-Item $_.FullName salida\ }
-          Get-ChildItem salida | ForEach-Object { Rename-Item $_.FullName ("InformacNube-" + "${{ steps.ver.outputs.version }}".TrimStart('v') + "-Windows-x64" + $_.Extension) }
+          $pref = "InformacNube-"
+          if ($env:CLIENTE) { $pref = "InformacNube-" + (Get-Culture).TextInfo.ToTitleCase($env:CLIENTE) + "-" }
+          Get-ChildItem salida | ForEach-Object { Rename-Item $_.FullName ($pref + "${{ steps.ver.outputs.version }}".TrimStart('v') + "-Windows-x64" + $_.Extension) }
           if (-not (Get-ChildItem salida)) { throw "No se generó el instalador" }
           # Control: el instalador TIENE que traer el programa (informacnube.exe). Si no, no se publica.
           $inst = Get-ChildItem salida | Select-Object -First 1
@@ -109,7 +131,7 @@ jobs:
           Write-Host "Control OK: el instalador trae informacnube.exe"
           # Copia con nombre fijo: es la que descarga la página "Conectar mi computador" de la nube.
           $first = Get-ChildItem salida | Select-Object -First 1
-          Copy-Item $first.FullName ("salida\InformacNube-Windows-x64" + $first.Extension)
+          Copy-Item $first.FullName ("salida\" + $pref + "Windows-x64" + $first.Extension)
           Get-ChildItem salida
 
       - name: Guardar instalador (artefacto de la ejecución)
@@ -126,11 +148,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "informac-${{ steps.ver.outputs.version }}"
+          if ($env:CLIENTE) { $tag = $env:CLIENTE + "-${{ steps.ver.outputs.version }}" }
           $files = (Get-ChildItem salida).FullName
           gh release view $tag --repo "${{ github.repository }}" 2>$null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $tag $files --clobber --repo "${{ github.repository }}"
           } else {
-            gh release create $tag $files --repo "${{ github.repository }}" --title "Informac Nube ${{ steps.ver.outputs.version }} (Windows)" --notes "Compilado desde Nextcloud Desktop ${{ steps.ver.outputs.version }} con la marca Informac Nube. Servidor fijo: ${{ env.SERVER_URL }}."
+            if ($env:CLIENTE) {
+              gh release create $tag $files --repo "${{ github.repository }}" --latest=false --title "Informac Nube para $($env:CLIENTE) ${{ steps.ver.outputs.version }} (Windows)" --notes "Variante con el logo del cliente $($env:CLIENTE). Servidor fijo: ${{ env.SERVER_URL }}."
+            } else {
+              gh release create $tag $files --repo "${{ github.repository }}" --title "Informac Nube ${{ steps.ver.outputs.version }} (Windows)" --notes "Compilado desde Nextcloud Desktop ${{ steps.ver.outputs.version }} con la marca Informac Nube. Servidor fijo: ${{ env.SERVER_URL }}."
+            }
           }
-          gh release edit $tag --repo "${{ github.repository }}" --prerelease=false --latest
+          # Solo la versión general queda como "latest" (la que descarga la página de la nube).
+          if (-not $env:CLIENTE) { gh release edit $tag --repo "${{ github.repository }}" --prerelease=false --latest }
